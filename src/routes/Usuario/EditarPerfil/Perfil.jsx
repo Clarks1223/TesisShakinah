@@ -2,8 +2,9 @@ import "./Perfil.css";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../../Context/AuthContext";
 import { useEffect, useState } from "react";
-import { collection, doc, getDoc } from "firebase/firestore";
-import { fireStore } from "../../../Auth/firebase";
+import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import { fireStore, storage } from "../../../Auth/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 export const EditarPerfil = () => {
   const { userId } = useAuth();
   const [objetoDatos, setObjetosDatos] = useState({
@@ -39,6 +40,7 @@ export const EditarPerfil = () => {
       });
 
       setObjetosDatos(objetoDatosRecuperados);
+      console.log("datos en el estado:", objetoDatos);
     } catch (error) {
       console.log("Error al traer los datos");
     }
@@ -48,8 +50,41 @@ export const EditarPerfil = () => {
     getUserInformation(userId);
   }, [userId, setValue]); // Add setValue as a dependency to useEffect
 
-  const onSubmit = (data) => {
-    console.log(data);
+  //Logica para cargar la foto
+  const cargarFoto = async (foto) => {
+    const archivo = foto[0];
+    const refArchivo = ref(storage, `Empleados/${archivo.name}`);
+    await uploadBytes(refArchivo, archivo);
+    const urlImgDescargar = await getDownloadURL(refArchivo);
+    return urlImgDescargar;
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      const Nombre = data.Nombre;
+      const Apellido = data.Apellido;
+      const Correo = data.Correo;
+      const Telefono = data.Telefono;
+
+      // Cargar la foto y obtener la URL de descarga
+      const urlImgDescargar = await cargarFoto(data.foto);
+
+      // Actualizar solo el campo de la foto en el documento
+      const referenciaUsuarioLogin = doc(fireStore, "UsuariosLogin", userId);
+      await updateDoc(referenciaUsuarioLogin, {
+        Nombre: Nombre,
+        Apellido: Apellido,
+        Correo: Correo,
+        Telefono: Telefono,
+        Foto: urlImgDescargar,
+      });
+      
+
+      alert("Su perfil se ha actualizado correctamente");
+    } catch (error) {
+      console.error(error);
+      alert("Algo salió mal");
+    }
   };
   return (
     <>
@@ -103,7 +138,7 @@ export const EditarPerfil = () => {
             {...register("Apellido", {
               maxLength: 10,
               minLength: 3,
-              pattern: /^[A-Za-z]+$/,
+              pattern: /^[A-Za-zñÑ]+$/,
               required: true,
             })}
             maxLength={10}

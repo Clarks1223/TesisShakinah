@@ -1,6 +1,9 @@
 import { useForm } from "react-hook-form";
 import { fireStore, auth } from "../../Auth/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import "./Registrar.css";
 import validationRules from "./ValidacionesRegistrar..js";
@@ -19,6 +22,9 @@ export const Registrar = () => {
         data.email,
         data.contrasenia
       );
+      //para enviar un correo de verificacion
+      await sendEmailVerification(infoUsuario.user);
+
       const docRef = doc(fireStore, `UsuariosLogin/${infoUsuario.user.uid}`);
       setDoc(docRef, {
         Nombre: data.nombre,
@@ -27,7 +33,9 @@ export const Registrar = () => {
         Telefono: data.telefono,
         Rol: "usuario",
       });
-      alert("Cuenta creada exitosamente");
+      alert(
+        "Cuenta creada exitosamente, por favor verifique su cuenta en su correo"
+      );
     } catch (error) {
       alert("Error al registrar usuario");
     }
