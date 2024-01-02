@@ -1,0 +1,26 @@
+.agregar-empleado {
+    text-align: center;
+    padding: 20px;
+  }
+  .agregar-empleado button {
+    width: auto;
+    padding: 10px;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #4caf50;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .agregar-empleado button:hover {
+    background-color: #45a049;
+  }
+  .lista-empelados {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-evenly;
+    }

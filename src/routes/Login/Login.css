@@ -1,0 +1,97 @@
+/* Login.css */
+
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.tituloForm {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333; /* Cambiado a color más oscuro */
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-login-correo,
+.form-login-password {
+  margin-bottom: 15px;
+
+}
+.form-login-correo label,
+.form-login-password label{
+  font-size: 18px;
+}
+.form-login-correo input,
+.form-login-password input{
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.form-login-correo label,
+.form-login-password label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.error-message {
+  color: #ff6666;
+  margin-top: 5px;
+}
+
+.botonEnviar {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.botonEnviar:hover {
+  background-color: #45a049;
+}
+
+.form-login-ingresar {
+  margin-top: 20px;
+  text-align: center;
+  color: #555; /* Cambiado a un color más oscuro */
+}
+
+.form-login-ingresar p {
+  margin: 0;
+}
+
+.form-login-ingresar a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.form-login-ingresar a:hover {
+  text-decoration: underline;
+}
+
+/* Reglas de medios para hacerlo responsive */
+
+@media only screen and (max-width: 600px) {
+  .login-container {
+    padding: 15px; /* Ajuste del padding para dispositivos más pequeños */
+  }
+
+  .tituloForm {
+    margin-bottom: 15px;
+  }
+}

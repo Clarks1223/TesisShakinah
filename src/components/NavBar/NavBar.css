@@ -1,0 +1,45 @@
+.menuPrincipal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 80px;
+    background-color: black;
+}
+
+.button-NavBar {
+    color: white;
+    background-color: black;
+    padding: 8px 16px; /* Ajusta el relleno para mejorar la apariencia */
+    border: 2px solid black;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+}
+
+.mi-cuenta {
+    background-color: white;
+    color: black;
+    padding: 8px 16px; /* Ajusta el relleno para mejorar la apariencia */
+    border: 2px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 600px) {
+    .menuPrincipal {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .button-NavBar, .mi-cuenta {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
+
+.button-NavBar:hover{
+    background-color: #5e5e5e;
+    border-color: #5e5e5e;
+}

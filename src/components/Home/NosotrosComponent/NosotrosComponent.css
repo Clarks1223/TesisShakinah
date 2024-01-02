@@ -1,0 +1,28 @@
+.nosotros-seccion{
+    width: 95%;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 30px ;
+    background-color: #fff;
+    box-shadow: 0 3px 13px 1px rgb(0, 0, 0 /9%);
+    border-radius: 20px;
+}
+
+.imagen-nosotros{
+    height: 100%;
+    width: auto;
+}
+.contenedor-titulo{
+    font-size: 1.3rem;
+    text-align: center;
+    margin: auto;
+}
+.contenedor-texto{
+    font-size: 1.1rem;
+    text-align: justify;
+}
+.Nosotros-titulo{
+    text-align: center;
+}

@@ -1,0 +1,27 @@
+.servicios-seccion {
+    display: grid;
+    margin: 30px;
+    border: 2px solid black;
+  }
+  
+  .servicios-empleado {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .servicios-img {
+    margin: 20px;
+    height: 200px;
+    width: 900px;
+  }
+  
+  .servicios-servicios-empleado{
+      display: flex;
+      justify-content: space-between;
+      margin: 20px;
+      flex-wrap: wrap;
+      gap: 20px;
+  }
+  .titulo-servicios{
+      text-align: center;
+  }

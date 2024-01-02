@@ -1,0 +1,74 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+.pagina {
+  display: grid;
+  gap: 10px;
+  grid-template:
+    "menu" 100px
+    "main"
+    "footer";
+}
+
+.menu {
+  grid-area: menu;
+}
+
+.main {
+  grid-area: main;
+}
+
+.footer {
+  grid-area: footer;
+}
+
+h1 {
+  font-size: 3rem;
+  font-family: "Alex Brush";
+  margin: 0;
+}
+
+h2 {
+  font-size: 2rem;
+  font-family: "Judson";
+}
+
+h3 {
+  font-size: 1.3rem;
+  font-family: "Judson";
+}
+
+p {
+  font-size: 1.2rem;
+  font-family: "San-serif";
+}
+
+@media screen and (max-width: 600px) {
+  .pagina {
+    grid-template:
+      "menu"
+      "main"
+      "footer";
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3,
+  p {
+    font-size: 1rem;
+  }
+}
+
+button {
+  background-color: black;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}

@@ -1,0 +1,13 @@
+.ServiciosOfertados-section{
+    display: flex;
+    gap: 20px;
+    width: auto;
+    height: auto;
+}
+.ServiciosOfertados-section-imagen{
+    height: 200px;
+    width: 200px;
+}
+.ServiciosOfertados-descripcion{
+    text-align: center;
+}

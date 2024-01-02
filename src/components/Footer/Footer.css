@@ -1,0 +1,29 @@
+.footer-seccion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    padding: 1em;
+    color: white;
+}
+
+.footer-direccion {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+@media screen and (max-width: 600px) {
+    .footer-seccion {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footer-titulo {
+        margin-top: 10px;
+    }
+}
+
+.bi {
+    font-size: 1.5em;
+}

@@ -1,0 +1,31 @@
+.menu-iconos {
+    display: flex;
+    justify-content: flex-start;
+    width: calc(40px + 75px + 40px + 75px + 40px); /* Ajuste para la separación inicial de 200px */
+    margin: auto;
+}
+
+.bi-facebook,
+.bi-instagram,
+.bi-whatsapp {
+    font-size: 40px;
+    margin-right: 40px; /* Espacio entre los iconos (se cambiará en la media query) */
+}
+
+a {
+    color: inherit;
+}
+
+/* Media Query para dispositivos con ancho máximo de 600px */
+@media screen and (max-width: 600px) {
+    .menu-iconos {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .bi-facebook,
+    .bi-instagram,
+    .bi-whatsapp {
+        margin-right: 20px; /* Espacio entre los iconos en pantallas más pequeñas */
+    }
+}

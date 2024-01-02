@@ -1,0 +1,48 @@
+.contenedor-citas {
+    width: 300px;
+    margin: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .contendor-titulo h2 {
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .contenedor-resumen {
+    margin-bottom: 15px;
+  }
+  
+  .item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .item p {
+    margin: 0;
+  }
+  .contenedor-botones{
+    text-align: center;
+  }
+  
+  .contenedor-botones button {
+    background-color: #e74c3c; /* Rojo claro */
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s; /* Transición suave para el cambio de color */
+  }
+  
+  .contenedor-botones button:hover {
+    background-color: #c0392b; /* Rojo más oscuro durante el hover */
+  }
+  

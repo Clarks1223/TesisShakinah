@@ -1,0 +1,69 @@
+.Persona {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.imagen {
+  display: flex;
+  justify-content: center; /* Centrar la imagen horizontalmente */
+  align-items: center; /* Centrar la imagen verticalmente */
+}
+
+.imagen img {
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.descripcion {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.botones {
+  display: flex;
+  justify-content: center;
+}
+
+.botones button {
+  margin: 0 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.botones button.modificar {
+  background-color: #fdd835;
+  color: #333;
+}
+
+.botones button.eliminar {
+  background-color: #ef5350;
+  color: #fff;
+}
+
+.botones button:hover {
+  filter: brightness(1.2);
+}
+
+.botones a {
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .Persona {
+    grid-template-columns: 1fr;
+  }
+}

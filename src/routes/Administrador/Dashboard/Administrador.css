@@ -1,0 +1,13 @@
+.pantalla-administrador {
+  margin: 10px;
+  display: grid;
+  grid-template:
+    "menu seccion" auto/
+    350px;
+}
+.administrador-menu {
+  grid-area: menu;
+}
+.administrador-section {
+  grid-area: seccion;
+}

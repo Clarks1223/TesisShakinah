@@ -1,0 +1,52 @@
+.contendor-agendar-cita {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.agendar-cita-imagen img {
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+.agendar-cita-detalle, .agendar-cita-datos {
+  text-align: center;
+}
+
+.agendar-cita-detalle h2 {
+  margin: 0;
+  font-size: 1.3em;
+}
+
+.agendar-cita-datos label {
+  margin-bottom: 4px;
+}
+
+.agendar-cita-datos input {
+  padding: 6px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.agendar-cita-boton {
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.agendar-cita-boton:hover {
+  background-color: #2980b9;
+}

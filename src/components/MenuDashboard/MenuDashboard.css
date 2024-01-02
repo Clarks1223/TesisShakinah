@@ -1,0 +1,42 @@
+.Menu-Admin {
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 2px solid;
+  padding: 20px;
+}
+
+.Menu-Admin-imagen {
+  text-align: center;
+}
+
+.Menu-Admin-Perfil {
+  text-align: center;
+}
+
+.Menu-Admin-botones {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.Menu-Admin-botones .Menu-Admin-button {
+  width: 100%;
+  padding: 10px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.Menu-Admin-link {
+  text-decoration: none;
+  width: 100%;
+}
+.Menu-Admin-button:hover {
+  background-color: #5e5e5e;
+  border-color: #5e5e5e;
+}
