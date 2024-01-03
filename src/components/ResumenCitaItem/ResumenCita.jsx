@@ -1,5 +1,8 @@
-import "./ResumenCita.css"
+import { useEffect, useState } from "react";
+import "./ResumenCita.css";
 export const ResumenCita = (props) => {
+  const [cancelar, setCancelar] = useState(props.estado);
+  console.log("el estado es:", cancelar);
   return (
     <section className="contenedor-citas">
       <section className="contendor-titulo">
@@ -20,7 +23,11 @@ export const ResumenCita = (props) => {
         </div>
         <div className="item">
           <p>Costo</p>
-          <p>{`$`}{props.costo}{`$`}</p>
+          <p>
+            {`$`}
+            {props.costo}
+            {`$`}
+          </p>
         </div>
         <div className="item">
           <p>Estado</p>
@@ -28,7 +35,13 @@ export const ResumenCita = (props) => {
         </div>
       </section>
       <section className="contenedor-botones">
-        <button>Cancelar cita</button>
+        <button
+          onClick={() => {
+            setCancelar("Cancelado");
+          }}
+        >
+          {cancelar === "Activo" ? "Cancelar" : "Eliminar Item"}
+        </button>
       </section>
     </section>
   );

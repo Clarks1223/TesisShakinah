@@ -1,39 +1,42 @@
 import ServiciosItem from "./Item/ServiciosItem";
-import "./ServiciosComponents.css"
-
+import "./ServiciosComponents.css";
+import { useState, useEffect } from "react";
+import { fireStore } from "../../../Auth/firebase";
+import { collection, getDocs } from "firebase/firestore";
 export const ServiciosComponent = (props) => {
+  const [servicios, setServicio] = useState([]);
+  const fetchData = async () => {
+    const collectionServicios = collection(fireStore, `Servicios`);
+    const resp = await getDocs(collectionServicios);
+    //aqui se unen los elementos que vienen de la base con su id
+    const serviciosFiltrados = resp.docs
+      .map((doc) => ({ ...doc.data(), id: doc.id }))
+      .filter((servicio) => servicio.Empleado === props.nombreEmpleado);
+    setServicio(serviciosFiltrados);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <>
       <section className="servicios-seccion">
         <section className="servicios-empleado">
-          <section className="servicios-img">
-            <img src="https://www.socialwibox.es/wp-content/uploads/bfi_thumb/female-hairdresser-applying-hair-straightener-for-long-hair-of-s-33cmrfxsr81tuuvt7upwm6qcxquehbvzvjytsep51n9kusvr6.jpg"></img>
-          </section>
-          <section className="servicios-descripcion">
-            <p className="servicios-descripcion-nombre">
-              {props.nombreEmpleado}
-            </p>
-            <p className="servicios-descripcio-texto">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem
-              dolores similique, eveniet sequi architecto inventore facere aut.
-              Quae pariatur sit magnam, quam nesciunt reiciendis quibusdam
-              aspernatur dicta placeat amet sunt. Lorem ipsum dolor sit amet
-              consectetur adipisicing elit. Quo fugiat ex iure nemo! Voluptatum
-              cupiditate possimus quas deserunt magni velit, illo accusantium
-              provident harum voluptates magnam tempora dolorem incidunt facere.
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempore,
-              provident rerum? Sequi magni totam quibusdam non ab nisi modi odio
-              nulla vitae error reiciendis, itaque ducimus, facere, natus atque
-              debitis.
-            </p>
-          </section>
+          <h1 className="servicios-descripcion-nombre">
+            {props.nombreEmpleado}
+          </h1>
         </section>
-        <h3 className="titulo-servicios">Servicios</h3>
         <section className="servicios-servicios-empleado">
-          <ServiciosItem serviciotitutlo="Limpieza facial" precio="30" />
-          <ServiciosItem serviciotitutlo="Manicura" precio="7" />
-          <ServiciosItem serviciotitutlo="Pedicura" precio="10" />
-          <ServiciosItem serviciotitutlo="Depilacion facial" precio="15" />
+          {servicios.map((servicio) => (
+            <ServiciosItem
+              key={servicio.id}
+              titulo={servicio.Titulo}
+              precio={servicio.Costo}
+              foto={servicio.Foto}
+              nombreEmpleado={props.nombreEmpleado}
+              id={servicio.id}
+            />
+          ))}
         </section>
       </section>
     </>

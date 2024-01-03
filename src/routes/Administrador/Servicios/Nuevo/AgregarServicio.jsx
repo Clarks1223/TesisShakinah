@@ -3,19 +3,34 @@ import { useState, useEffect } from "react";
 import "./AgregarServicio.css";
 import { validateCosto } from "../../../../utils/formValidator";
 import { fireStore, storage } from "../../../../Auth/firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  doc,
+  collection,
+  getDocs,
+  getDoc,
+  setDoc,
+  addDoc,
+} from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth } from "../../../../Context/AuthContext";
 
 export const AgregarServicio = () => {
+  const { itemID, setItemID } = useAuth();
+  const [dbValores, setDBValores] = useState({
+    Titulo: "",
+    Empleado: "",
+    Costo: "",
+  });
   const {
     register,
     formState: { errors },
     handleSubmit,
     setValue,
-  } = useForm();
-  //obtener los empleados:
+  } = useForm({
+    defaultValues: dbValores,
+  });
+  //obtener los empleados para mostrarlos en el label:
   const [personal, setPersonal] = useState([]);
-
   const fetchData = async () => {
     const collectionEmpleados = collection(fireStore, "Personal");
     const resp = await getDocs(collectionEmpleados);
@@ -29,7 +44,36 @@ export const AgregarServicio = () => {
   useEffect(() => {
     fetchData();
   }, []);
+  //Para actualizar los datos
+  const getItemInformation = async (id) => {
+    try {
+      console.log("El id a utilizar es++: ", id);
+      const refDatosItem = doc(collection(fireStore, "Servicios"), id);
+      const objeto = await getDoc(refDatosItem);
+      const objetoDatosRecuperados = objeto.exists() ? objeto.data() : {};
+      console.log("El objeto recuperado es: ", objetoDatosRecuperados);
 
+      // Set values dynamically using setValue
+      Object.keys(objetoDatosRecuperados).forEach((key) => {
+        setValue(key, objetoDatosRecuperados[key]);
+      });
+
+      setDBValores(objetoDatosRecuperados);
+
+      console.log("datos en el estado:", dbValores);
+    } catch (error) {
+      console.log("Error al traer los datos");
+    }
+  };
+
+  useEffect(() => {
+    if (itemID === "") {
+    } else {
+      getItemInformation(itemID);
+    }
+  }, [itemID, setValue]);
+
+  //Para subir la foto
   const cargarFoto = async (foto) => {
     const archivo = foto[0];
     const refArchivo = ref(storage, `Servicios/${archivo.name}`);
@@ -40,19 +84,28 @@ export const AgregarServicio = () => {
 
   const onSubmit = async (data) => {
     try {
-      const titulo = data.titulo;
-      const empleado = data.empleado;
-      const costo = data.costo;
-      const urlImgDescargar = await cargarFoto(data.foto);
+      const Titulo = data.Titulo;
+      const Empleado = data.Empleado;
+      const Costo = data.Costo;
+      const urlImgDescargar = await cargarFoto(data.Foto);
       const newServicio = {
-        Titulo: titulo,
-        Empleado: empleado,
-        Costo: costo,
+        Titulo: Titulo,
+        Empleado: Empleado,
+        Costo: Costo,
         Foto: urlImgDescargar,
       };
-
-      await addDoc(collection(fireStore, "Servicios"), newServicio);
-      alert("Nuevo item agregado");
+      if (itemID === "") {
+        await addDoc(collection(fireStore, "Servicios"), newServicio);
+        alert("Nuevo item agregado");
+      } else {
+        const referenciaCities = doc(
+          collection(fireStore, "Servicios"),
+          itemID
+        );
+        await setDoc(referenciaCities, newServicio);
+        setItemID("");
+        alert("Item modificado exitosamente");
+      }
     } catch (error) {
       console.error(error);
       alert("Algo salió mal");
@@ -64,22 +117,22 @@ export const AgregarServicio = () => {
       <form className="form-empleado" onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label>Titulo</label>
-          {errors.titulo?.type === "required" && (
+          {errors.Titulo?.type === "required" && (
             <p className="error">Debe ingresar su nombre</p>
           )}
-          {errors.titulo?.type === "maxLength" && (
+          {errors.Titulo?.type === "maxLength" && (
             <p className="error">Solo se permiten 10 caracteres</p>
           )}
-          {errors.titulo?.type === "minLength" && (
+          {errors.Titulo?.type === "minLength" && (
             <p className="error">Minimo 3 caracteres</p>
           )}
-          {errors.titulo?.type === "pattern" && (
+          {errors.Titulo?.type === "pattern" && (
             <p className="error">
               No se permiten numeros ni caracteres especiales
             </p>
           )}
           <input
-            {...register("titulo", {
+            {...register("Titulo", {
               required: true,
               maxLength: 20,
               minLength: 3,
@@ -91,12 +144,12 @@ export const AgregarServicio = () => {
 
         <div>
           <label>Empleado</label>
-          {errors.empleado?.type === "required" && (
+          {errors.Empleado?.type === "required" && (
             <p className="error">Debe seleccionar un empleado de la lista</p>
           )}
           <select
             className="default-select"
-            {...register("empleado", { required: true })}
+            {...register("Empleado", { required: true })}
           >
             <option value="" disabled hidden>
               Seleccionar empleado
@@ -113,21 +166,21 @@ export const AgregarServicio = () => {
         </div>
         <div>
           <label>Costo</label>
-          {errors.costo?.type === "required" && (
+          {errors.Costo?.type === "required" && (
             <p className="error">Debe ingresar el costo del producto</p>
           )}
-          {errors.costo?.type === "maxLength" && (
+          {errors.Costo?.type === "maxLength" && (
             <p className="error">Solo se permiten 6 caracteres</p>
           )}
-          {errors.costo?.type === "pattern" && (
+          {errors.Costo?.type === "pattern" && (
             <p className="error">El formato es incorrecto</p>
           )}
-          {errors.costo?.type === "validate" && (
+          {errors.Costo?.type === "validate" && (
             <p className="error">El costo debe estar entre $5.00 y $150.00</p>
           )}
           <input
             type="text"
-            {...register("costo", {
+            {...register("Costo", {
               required: true,
               maxLength: 6,
               pattern: /^\d{1,3}(\.\d{1,2})?$/,
@@ -138,13 +191,13 @@ export const AgregarServicio = () => {
         </div>
         <div>
           <label>Foto</label>
-          {errors.foto?.type === "required" && (
+          {errors.Foto?.type === "required" && (
             <p className="error">La foto es obligatoria</p>
           )}
           <input
             type="file"
             accept="image/*"
-            {...register("foto", {
+            {...register("Foto", {
               required: true,
             })}
           />

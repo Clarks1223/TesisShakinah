@@ -8,87 +8,90 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useAuth } from "../../../../Context/AuthContext";
 const AgregarEmpleado = () => {
   const { itemID, setItemID } = useAuth();
-  const initialValues = {
+
+  const [dbValores, setDBValores] = useState({
     Nombre: "",
     Apellido: "",
     Email: "",
-    Celular: "",
+    Telefono: "",
     Cargo: "",
-    contrasenia: "",
-    Foto: "",
-  };
+    Password: "",
+  });
 
-  const [datosFormulario, setDatosFormulario] = useState(initialValues);
-  const inputChange = (e) => {
-    const { name, value } = e.target;
-    setDatosFormulario((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-  const getLinkById = async (id) => {
-    try {
-      const docRef = doc(collection(fireStore, "Personal"), id);
-      const docSnapshot = await getDoc(docRef);
-      if (docSnapshot.exists()) {
-        const linkData = { ...docSnapshot.data() };
-        setDatosFormulario(linkData);
-        console.log("Dato obtenido:", linkData);
-      } else {
-        console.log("El documento no existe.");
-      }
-    } catch (error) {
-      console.error("Error al obtener el documento:", error);
-    }
-  };
-  useEffect(() => {
-    if (itemID === "") {
-      setDatosFormulario(initialValues);
-    } else {
-      getLinkById(itemID);
-    }
-  }, [itemID]);
   const {
     register,
     formState: { errors },
+    setValue,
     handleSubmit,
-  } = useForm();
-  
-  const cargarFoto = async (foto) => {
-    const archivo = foto[0];
+  } = useForm({
+    defaultValues: dbValores,
+  });
+
+  const getItemInformation = async (id) => {
+    try {
+      console.log("El id a utilizar es++: ", id);
+      const refDatosItem = doc(collection(fireStore, "Personal"), id);
+      const objeto = await getDoc(refDatosItem);
+      const objetoDatosRecuperados = objeto.exists() ? objeto.data() : {};
+      console.log("El objeto recuperado es: ", objetoDatosRecuperados);
+
+      // Set values dynamically using setValue
+      Object.keys(objetoDatosRecuperados).forEach((key) => {
+        setValue(key, objetoDatosRecuperados[key]);
+      });
+
+      setDBValores(objetoDatosRecuperados);
+
+      console.log("datos en el estado:", dbValores);
+    } catch (error) {
+      console.log("Error al traer los datos");
+    }
+  };
+
+  useEffect(() => {
+    if (itemID === "") {
+    } else {
+      getItemInformation(itemID);
+    }
+  }, [itemID, setValue]);
+
+  const cargarFoto = async (Foto) => {
+    const archivo = Foto[0];
     const refArchivo = ref(storage, `Empleados/${archivo.name}`);
     await uploadBytes(refArchivo, archivo);
     const urlImgDescargar = await getDownloadURL(refArchivo);
     return urlImgDescargar;
   };
+
   const onSubmit = async (data) => {
     try {
-      const nombre = data.nombre;
-      const apellido = data.apellido;
-      const email = data.email;
-      const telefono = data.telefono;
-      const cargo = data.cargo;
-      const contrasenia = data.contrasenia;
-      const urlImgDescargar = await cargarFoto(data.foto);
+      const Nombre = data.Nombre;
+      const Apellido = data.Apellido;
+      const Email = data.Email;
+      const Telefono = data.Telefono;
+      const Cargo = data.Cargo;
+      const Password = data.Password;
+      const urlImgDescargar = await cargarFoto(data.Foto);
       const newEmpleado = {
-        Nombre: nombre,
-        Apellido: apellido,
-        Email: email,
-        Telefono: telefono,
-        Cargo: cargo,
-        contrasenia: contrasenia,
+        Nombre: Nombre,
+        Apellido: Apellido,
+        Email: Email,
+        Telefono: Telefono,
+        Cargo: Cargo,
+        Password: Password,
         Foto: urlImgDescargar,
       };
       if (itemID === "") {
+        console.log("va a registrar");
         const infoUsuario = await createUserWithEmailAndPassword(
           auth,
-          email,
-          contrasenia
+          Email,
+          Password
         );
         const docRef = doc(fireStore, `Personal/${infoUsuario.user.uid}`);
         setDoc(docRef, { ...newEmpleado });
-        setItemID("");
       } else {
+        console.log("va a modificar");
         const referenciaCities = doc(collection(fireStore, "Personal"), itemID);
         await setDoc(referenciaCities, newEmpleado);
         setItemID("");
@@ -99,27 +102,28 @@ const AgregarEmpleado = () => {
       alert("Algo salió mal");
     }
   };
+
   return (
     <>
       <form className="form-empleado" onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label>Nombre</label>
-          {errors.nombre?.type === "required" && (
+          {errors.Nombre?.type === "required" && (
             <p className="error">Debe ingresar su nombre</p>
           )}
-          {errors.nombre?.type === "maxLength" && (
+          {errors.Nombre?.type === "maxLength" && (
             <p className="error">Solo se permiten 10 caracteres</p>
           )}
-          {errors.nombre?.type === "minLength" && (
+          {errors.Nombre?.type === "minLength" && (
             <p className="error">Minimo 3 caracteres</p>
           )}
-          {errors.nombre?.type === "pattern" && (
+          {errors.Nombre?.type === "pattern" && (
             <p className="error">
               No se permiten numeros ni caracteres especiales
             </p>
           )}
           <input
-            {...register("nombre", {
+            {...register("Nombre", {
               required: true,
               maxLength: 10,
               minLength: 3,
@@ -130,128 +134,123 @@ const AgregarEmpleado = () => {
         </div>
         <div>
           <label>Apellido</label>
-          {errors.apellido?.type === "required" && (
+          {errors.Apellido?.type === "required" && (
             <p className="error">Debe ingresar su apellido</p>
           )}
-          {errors.apellido?.type === "maxLength" && (
+          {errors.Apellido?.type === "maxLength" && (
             <p className="error">Solo se permiten 10 caracteres</p>
           )}
-          {errors.apellido?.type === "minLength" && (
+          {errors.Apellido?.type === "minLength" && (
             <p className="error">Minimo 3 caracteres</p>
           )}
-          {errors.apellido?.type === "pattern" && (
+          {errors.Apellido?.type === "pattern" && (
             <p className="error">
               No se permiten numeros ni caracteres especiales
             </p>
           )}
           <input
-            {...register("apellido", {
+            {...register("Apellido", {
               maxLength: 10,
               minLength: 3,
               pattern: /^[A-Za-z]+$/,
               required: true,
             })}
             maxLength={10}
-            
           />
         </div>
         <div>
           <label>Correo</label>
-          {errors.email?.type === "required" && (
+          {errors.Email?.type === "required" && (
             <p className="error">Debe ingresar correo electrónico</p>
           )}
-          {errors.email?.type === "maxLength" && (
+          {errors.Email?.type === "maxLength" && (
             <p className="error">Solo se permiten 10 caracteres</p>
           )}
-          {errors.email?.type === "pattern" && (
+          {errors.Email?.type === "pattern" && (
             <p className="error">El formato es incorrecto</p>
           )}
           <input
-            {...register("email", {
+            {...register("Email", {
               required: true,
               pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
               maxLength: 30,
             })}
             maxLength={30}
-            
           />
         </div>
         <div>
           <label>Celular</label>
-          {errors.telefono?.type === "required" && (
+          {errors.Telefono?.type === "required" && (
             <p className="error">Debe ingresar su numero de telefono</p>
           )}
-          {errors.telefono?.type === "maxLength" && (
+          {errors.Telefono?.type === "maxLength" && (
             <p className="error">Solo se permiten 10 caracteres</p>
           )}
-          {errors.telefono?.type === "pattern" && (
+          {errors.Telefono?.type === "pattern" && (
             <p className="error">El formato es incorrecto</p>
           )}
           <input
-            {...register("telefono", {
+            {...register("Telefono", {
               required: true,
               pattern: /^0\d{9}$/,
               maxLength: 10,
             })}
             maxLength={10}
-            
           />
         </div>
         <div>
           <label>Cargo</label>
-          {errors.nombre?.type === "required" && (
+          {errors.Cargo?.type === "required" && (
             <p className="error">Debe ingresar el cargo</p>
           )}
-          {errors.nombre?.type === "maxLength" && (
+          {errors.Cargo?.type === "maxLength" && (
             <p className="error">Solo se permiten 10 caracteres</p>
           )}
-          {errors.nombre?.type === "minLength" && (
+          {errors.Cargo?.type === "minLength" && (
             <p className="error">Minimo 3 caracteres</p>
           )}
-          {errors.nombre?.type === "pattern" && (
+          {errors.Cargo?.type === "pattern" && (
             <p className="error">
               No se permiten numeros ni caracteres especiales
             </p>
           )}
           <input
-            {...register("cargo", {
+            {...register("Cargo", {
               required: true,
               maxLength: 15,
               minLength: 3,
-              pattern: /^[A-Za-z]+$/,
+              pattern: /^[A-Za-z\s]+$/,
             })}
             maxLength={15}
-            
           />
         </div>
         <div>
           <label>Contraseña</label>
-          {errors.contrasenia?.type === "required" && (
+          {errors.Password?.type === "required" && (
             <p className="error">La contaseña es obligatoria</p>
           )}
-          {errors.contrasenia?.type === "maxLength" && (
+          {errors.Password?.type === "maxLength" && (
             <p className="error">Solo se permiten 10 caracteres</p>
           )}
-          {errors.contrasenia?.type === "minLength" && (
+          {errors.Password?.type === "minLength" && (
             <p className="error">
               La contraseña debe tener minimo 6 caracteres
             </p>
           )}
-          {errors.contrasenia?.type === "pattern" && (
+          {errors.Password?.type === "pattern" && (
             <p className="error">
               La contraseña debe tener almenos un numero y una letra mayuscula
             </p>
           )}
           <input
             type="password"
-            {...register("contrasenia", {
+            {...register("Password", {
               required: true,
               maxLength: 30,
               minLength: 6,
               pattern: /^(?=.*[0-9])(?=.*[A-Z])/,
             })}
             maxLength={10}
-            
           />
         </div>
         <div>
@@ -262,7 +261,7 @@ const AgregarEmpleado = () => {
           <input
             type="file"
             accept="image/*"
-            {...register("foto", {
+            {...register("Foto", {
               required: true,
             })}
           />

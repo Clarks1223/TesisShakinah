@@ -3,14 +3,11 @@ import ListaEmpleados from "../../../components/ListaEmpleados/ListaEmpleados.js
 import { fireStore } from "../../../Auth/firebase.js";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { Link, Outlet } from "react-router-dom";
-import { useAuth } from "../../../Context/AuthContext.jsx";
 const VerEmpleados = () => {
-  const { setItemID } = useAuth();
 
   const [dsp1, setDsp1] = useState(true);
-  const [empleados, setEmpleados] = useState([]);
 
-  setItemID("");
+  const [empleados, setEmpleados] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,7 +20,7 @@ const VerEmpleados = () => {
       );
     };
     fetchData();
-  }, []);
+  }, [empleados]);
 
   const eliminarEmpleado = async (id) => {
     try {

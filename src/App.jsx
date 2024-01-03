@@ -31,6 +31,7 @@ import EditarPerfil from "./routes/Usuario/EditarPerfil/Perfil";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 //Context
 import { AuthProvider } from "./Context/AuthContext";
+import { CitaProvider } from "./Context/CitaContext";
 
 function App() {
   return (
@@ -41,37 +42,39 @@ function App() {
 
       <section className="main">
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Shakinah />} />
-            <Route path="/Nosotros" element={<Nosotros />} />
-            <Route path="/Contactos" element={<Contactos />} />
-            <Route path="/Servicios" element={<Servicios />} />
-            <Route path="/Registrar" element={<Registrar />} />
-            <Route path="/Login" element={<Login />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/Administrador/" element={<Administrador />}>
-                <Route path="Personal/" element={<VerEmpleados />}>
-                  <Route path="Nuevo" element={<AgregarEmpleado />} />
-                </Route>
+          <CitaProvider>
+            <Routes>
+              <Route path="/" element={<Shakinah />} />
+              <Route path="/Nosotros" element={<Nosotros />} />
+              <Route path="/Contactos" element={<Contactos />} />
+              <Route path="/Servicios" element={<Servicios />} />
+              <Route path="/Registrar" element={<Registrar />} />
+              <Route path="/Login" element={<Login />} />
 
-                <Route path="Citas" element={<ResumenCitas />} />
-                <Route path="Servicios/" element={<ResumenServicios />}>
-                  <Route path="Nuevo" element={<AgregarServicio />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/Administrador/" element={<Administrador />}>
+                  <Route path="Personal/" element={<VerEmpleados />}>
+                    <Route path="Nuevo" element={<AgregarEmpleado />} />
+                  </Route>
+                  <Route path="Citas" element={<ResumenCitas />} />
+                  <Route path="Servicios/" element={<ResumenServicios />}>
+                    <Route path="Nuevo" element={<AgregarServicio />} />
+                  </Route>
+                  <Route path="Password" element={<Password />} />
                 </Route>
-                <Route path="Password" element={<Password />} />
               </Route>
-            </Route>
 
-            <Route element={<ProtectedRoute />}>
-              <Route path="/Usuario/" element={<Usuario />}>
-                <Route path="Agendar" element={<ListarCitas />} />
-                <Route path="VerCitas" element={<VerCitas />} />
-                <Route path="Perfil" element={<EditarPerfil />} />
-                <Route path="Password" element={<Password />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/Usuario/" element={<Usuario />}>
+                  <Route path="Agendar" element={<ListarCitas />} />
+                  <Route path="VerCitas" element={<VerCitas />} />
+                  <Route path="Perfil" element={<EditarPerfil />} />
+                  <Route path="Password" element={<Password />} />
+                </Route>
+                <Route path="*" element={<ErrorRoute />} />
               </Route>
-              <Route path="*" element={<ErrorRoute />} />
-            </Route>
-          </Routes>
+            </Routes>
+          </CitaProvider>
         </AuthProvider>
       </section>
 
