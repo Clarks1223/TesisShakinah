@@ -7,7 +7,7 @@ import { collection, addDoc } from "firebase/firestore";
 
 const ItemCita = (props) => {
   const { eliminarCita } = useCita();
-  const lol = "11111";
+  const lol = "222222222";
   const {
     register,
     handleSubmit,

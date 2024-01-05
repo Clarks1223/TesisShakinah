@@ -1,25 +1,10 @@
 import { ServiciosComponent } from "../../../components/Home/ServiciosComponent/ServiciosComponent";
 import "./servicios.css";
-import { useState, useEffect } from "react";
-import { fireStore } from "../../../Auth/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { useAuth } from "../../../Context/AuthContext";
 
 export const Servicios = () => {
-  const [personal, setPersonal] = useState([]);
+  const { personal } = useAuth();
 
-  const fetchData = async () => {
-    const collectionEmpleados = collection(fireStore, "Personal");
-    const resp = await getDocs(collectionEmpleados);
-    //aqui se unen los elementos que vienen de la base con su id
-    setPersonal(
-      resp.docs.map((doc) => {
-        return { ...doc.data(), id: doc.id };
-      })
-    );
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
   return (
     <>
       <section>

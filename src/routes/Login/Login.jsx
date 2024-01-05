@@ -4,9 +4,8 @@ import { useAuth } from "../../Context/AuthContext";
 import "./Login.css";
 
 export const Login = () => {
-  const { signIn, user, userId } = useAuth();
+  const { signIn, userInformation } = useAuth();
   const navigate = useNavigate();
-  const idAdmin = "8zmzwVK0ZUNxACmsUzqLDl5pz2B2";
   const {
     register,
     formState: { errors },
@@ -16,15 +15,14 @@ export const Login = () => {
   const onSubmit = async (data) => {
     try {
       await signIn(data.email, data.contrasenia);
-      if (user) {
-        userId === idAdmin ? navigate("/Administrador") : navigate("/Usuario");
-      } else {
-        alert("Verifique sus credenciales");
-      }
+      console.log(`item recuperado${userInformation}`);
+      userInformation.Rol === "Administrador"
+        ? navigate("/Administrador")
+        : navigate("/Usuario");
     } catch (error) {
+      navigate("/Login")
       console.error("Error durante el inicio de sesión:", error.message);
-      alert("Verifique sus credencialess");
-      // Puedes manejar el error aquí si es necesario
+      alert("Verifique sus credenciales");
     }
   };
   return (

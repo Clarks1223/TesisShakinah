@@ -1,0 +1,27 @@
+.Nosotros {
+  padding: 20px;
+}
+
+.Nosotros-titulo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.NosotrosComponents {
+  margin-bottom: 20px; /* Espaciado entre los componentes Nosotros */
+}
+
+/* Agregar estilos para pantallas más pequeñas utilizando media queries */
+@media only screen and (max-width: 768px) {
+  .Nosotros {
+    padding: 10px; /* Ajustar el relleno para pantallas más pequeñas */
+  }
+
+  .Nosotros-titulo {
+    font-size: 1.5rem; /* Ajustar el tamaño del título para pantallas más pequeñas */
+  }
+
+  .NosotrosComponents {
+    margin-bottom: 10px; /* Reducir el espaciado entre los componentes para pantallas más pequeñas */
+  }
+}

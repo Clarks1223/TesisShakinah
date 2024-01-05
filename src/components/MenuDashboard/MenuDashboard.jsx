@@ -1,24 +1,9 @@
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./MenuDashboard.css";
 import { useAuth } from "../../Context/AuthContext";
 
 export const MenuDashboard = (props) => {
-  const { signOut, datosUsuario } = useAuth();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Llama a datosUsuario para obtener la información del usuario
-        await datosUsuario();
-      } catch (error) {
-        console.error("Error al obtener datos del usuario:", error.message);
-      }
-    };
-
-    fetchData();
-  }, [datosUsuario]);
-
+  const { signOut, userInformation } = useAuth();
   const cerrarSesion = async () => {
     await signOut();
   };
@@ -28,12 +13,18 @@ export const MenuDashboard = (props) => {
       <section className="Menu-Admin">
         <section className="Menu-Admin-imagen">
           <img
-            src="https://static.vecteezy.com/system/resources/previews/007/033/146/non_2x/profile-icon-login-head-icon-vector.jpg"
+            src={userInformation.Foto}
             alt="Imagen de perfil"
+            className="imagen-usuario"
           />
-          <section className="Menu-Admin-Perfil">
-          </section>
         </section>
+
+        <section className="Menu-Admin-Perfil">
+          <h3>{`${userInformation.Nombre} ${userInformation.Apellido}`}</h3>
+          <h3>{userInformation.Correo}</h3>
+          <h3>{userInformation.Telefono}</h3>
+        </section>
+
         <section className="Menu-Admin-botones">
           <Link to={props.direccion1} className="Menu-Admin-link">
             <button className="Menu-Admin-button">{props.boton1}</button>

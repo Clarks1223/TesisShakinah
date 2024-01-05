@@ -3,40 +3,73 @@
   max-width: 280px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 20px;
   border: 2px solid;
   padding: 20px;
+  background-color: #f4f4f4;
 }
 
 .Menu-Admin-imagen {
   text-align: center;
 }
 
+.imagen-usuario {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #fff;
+}
+
 .Menu-Admin-Perfil {
   text-align: center;
+}
+
+.Menu-Admin-Perfil h3 {
+  margin: 5px 0;
 }
 
 .Menu-Admin-botones {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  align-items: center;
+  gap: 10px;
+  width: 100%;
 }
 
 .Menu-Admin-botones .Menu-Admin-button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   color: #fff;
+  background-color: black;
   border: none;
   cursor: pointer;
   border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.Menu-Admin-botones .Menu-Admin-button:hover {
+  background-color: #5e5e5e;
+    border-color: #5e5e5e;
 }
 
 .Menu-Admin-link {
   text-decoration: none;
   width: 100%;
 }
-.Menu-Admin-button:hover {
-  background-color: #5e5e5e;
-  border-color: #5e5e5e;
+
+/* Estilos para hacer el menú más responsive */
+
+@media only screen and (max-width: 768px) {
+  .Menu-Admin {
+    max-width: 100%;
+  }
+
+  .Menu-Admin-imagen {
+    order: -1; /* Mover la imagen arriba en pantallas más pequeñas */
+  }
+
+  .Menu-Admin-botones .Menu-Admin-button {
+    font-size: 14px; /* Reducir el tamaño de la fuente en pantallas más pequeñas */
+  }
 }

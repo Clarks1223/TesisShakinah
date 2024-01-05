@@ -7,7 +7,7 @@ import {
   updatePassword,
   signOut,
 } from "firebase/auth";
-import { collection } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 
 const auth = getAuth(fireBaseApp);
 
@@ -17,46 +17,72 @@ export const AuthContext = createContext();
 // Proveedor de contexto para gestionar el estado de autenticación
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate(); // Usar useNavigate para redirigir
-  
+
   // Estado para almacenar la información del usuario
   const [user, setUser] = useState(null);
 
   //almacenar la id del item a actualizar
   const [itemID, setItemID] = useState("");
 
-  //Almacenar el id de autenticacion del usuario
+  //Almacenar solo el id del usuario que inicio sesion.
   const [userId, setUserId] = useState(null);
 
-  //ToDo!! almacenar los datos de la tabla usuariosLogin
+  //Almacenar los nombres y apllidos e ids de empleados para mostrarlos siempre que sea necesario
+  const [personal, setPersonal] = useState([]);
 
+  //ToDo!! almacenar los datos de la tabla usuariosLogin
   const [userInformation, setUserInformation] = useState(null);
 
   useEffect(() => {
     // Observador de cambios de autenticación de Firebase
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        // El usuario ha iniciado sesión
+        // cuando el usuario ha iniciado sesion se cargar todo lo de aqui.
         setUser(authUser);
         setUserId(authUser.uid);
+        //para almacenar los datos del usuario que ha iniciado sesion
+        getDatosUsuario();
       } else {
         // El usuario ha cerrado sesión
         setUser(null);
       }
+      //nombresEmpleados debe estar dento del if para mayor seguridad, esto garantiza que solo se muestren datos
+      //cuando este utentificado
+      nombresEmpleados();
     });
 
     // Limpia el observador al desmontar el componente
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [user]);
 
-  //Cargar datos del usuario que inicio sesion
-  const datosUsuario = async () => {
-    //try {
-    //const collectionRef = collection(fireStore, "/UsuariosLogin");
-    //} catch (error) {
-    //      console.error("Error al obtener datos del usuario:", error.message);
-    //  }
+  //Logica de traer los nombres de los empleados una sola vez y reutilizarlos siempre en la aplicacion
+  const nombresEmpleados = async () => {
+    const collectionEmpleados = collection(fireStore, "Personal");
+    const resp = await getDocs(collectionEmpleados);
+    //aqui se unen los elementos que vienen de la base con su id
+    setPersonal(
+      resp.docs.map((doc) => {
+        return { ...doc.data(), id: doc.id };
+      })
+    );
+  };
+  //Cargar datos del usuario que inicio sesion sin id
+  const getDatosUsuario = async () => {
+    try {
+      const refDatosUsuario = doc(
+        collection(fireStore, "UsuariosLogin"),
+        userId
+      );
+      const objeto = await getDoc(refDatosUsuario);
+      const objetoDatosRecuperados = objeto.exists() ? objeto.data() : {};
+      console.log("El objeto recuperado essss: ", objetoDatosRecuperados);
+
+      setUserInformation(objetoDatosRecuperados);
+    } catch (error) {
+      console.log("Algo salio mal ++");
+    }
   };
 
   // Función para iniciar sesión
@@ -75,6 +101,7 @@ export const AuthProvider = ({ children }) => {
       await signOut(auth);
       // Redirigir al usuario a la página de login después de cerrar sesión
       navigate("/login");
+      setUser(null);
     } catch (error) {
       console.error("Error al cerrar sesión:", error.message);
       throw error;
@@ -97,12 +124,12 @@ export const AuthProvider = ({ children }) => {
 
   // Objeto de valor para proporcionar al contexto
   const contextValue = {
-    user,
     userId,
     userInformation,
     itemID,
+    personal,
     setItemID,
-    datosUsuario,
+    getDatosUsuario,
     signIn,
     signOut: signOutAndRedirect,
     updatePassword: updatePasswordHandler,

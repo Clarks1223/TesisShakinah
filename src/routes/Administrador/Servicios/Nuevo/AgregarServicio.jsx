@@ -15,7 +15,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useAuth } from "../../../../Context/AuthContext";
 
 export const AgregarServicio = () => {
-  const { itemID, setItemID } = useAuth();
+  const { itemID, setItemID, personal } = useAuth();
   const [dbValores, setDBValores] = useState({
     Titulo: "",
     Empleado: "",
@@ -29,21 +29,7 @@ export const AgregarServicio = () => {
   } = useForm({
     defaultValues: dbValores,
   });
-  //obtener los empleados para mostrarlos en el label:
-  const [personal, setPersonal] = useState([]);
-  const fetchData = async () => {
-    const collectionEmpleados = collection(fireStore, "Personal");
-    const resp = await getDocs(collectionEmpleados);
-    //aqui se unen los elementos que vienen de la base con su id
-    setPersonal(
-      resp.docs.map((doc) => {
-        return { ...doc.data(), id: doc.id };
-      })
-    );
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+
   //Para actualizar los datos
   const getItemInformation = async (id) => {
     try {

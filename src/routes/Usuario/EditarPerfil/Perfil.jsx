@@ -28,7 +28,6 @@ export const EditarPerfil = () => {
   // 2. Obtener la informacion del usuario en base al id
   const getUserInformation = async (id) => {
     try {
-      console.log("El id a utilizar es: ", id);
       const refDatosUsuario = doc(collection(fireStore, "UsuariosLogin"), id);
       const objeto = await getDoc(refDatosUsuario);
       const objetoDatosRecuperados = objeto.exists() ? objeto.data() : {};
@@ -146,22 +145,11 @@ export const EditarPerfil = () => {
         </div>
         <div>
           <label>Correo</label>
-          {errors.Correo?.type === "required" && (
-            <p className="error">Debe ingresar correo electrónico</p>
-          )}
-          {errors.Correo?.type === "maxLength" && (
-            <p className="error">Solo se permiten 10 caracteres</p>
-          )}
-          {errors.Correo?.type === "pattern" && (
-            <p className="error">El formato es incorrecto</p>
-          )}
           <input
             {...register("Correo", {
-              required: true,
-              pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
-              maxLength: 30,
             })}
             maxLength={30}
+            disabled
           />
         </div>
         <div>

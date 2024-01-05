@@ -6,7 +6,7 @@ export const Footer = () => {
     <section className="footer-seccion">
       <section className="footer-direccion">
         <i className="bi bi-house"></i>
-        <p>Manuel Valdiviezo, Quito 170132, Ecuador</p>
+        <p>Manuel Valdiviezo Quito 170132, Ecuador</p>
       </section>
       <section className="footer-titulo">
         <h1>Shakinah</h1>

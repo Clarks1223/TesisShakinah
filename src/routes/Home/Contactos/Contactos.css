@@ -1,35 +1,54 @@
-.conctactos-section{
+/* Contactos.css */
+
+.conctactos-section {
     display: grid;
     margin: 30px;
     grid-template-areas: 
-    "Titulo Titulo"
-    "Icono Horarios"
-    "Mapa formulario";
-}
-.contactos-titulo{
+      "Titulo Titulo"
+      "Icono Horarios"
+      "Mapa Mapa";
+    gap: 20px; /* Agregado espacio entre las secciones */
+  }
+  
+  .contactos-titulo {
     grid-area: Titulo;
     text-align: center;
-}
-.contactos-horarios{
+  }
+  
+  .contactos-redes,
+  .contactos-horarios,
+  .contactos-mapa {
+    margin: 10px; /* Añadido margen a todas las secciones para separación */
+  }
+  
+  .contactos-horarios {
     display: flex;
-    justify-content: space-between;
-}
-.FormContancto{
-    display: flex;
-    flex-direction:row;
-    justify-content: space-between;
-}
-.FormContancto section{
-    display: flex;
-    margin: 10px;
-    flex-direction: column;
-}
-.FormContancto section input{
+    flex-wrap: wrap; /* Ajuste para envolver los elementos en pantallas más pequeñas */
+    justify-content: space-around;
+  }
+  
+  .contactos-horarios section {
+    flex-basis: calc(33.33% - 20px); /* Ajuste de ancho para pantallas más pequeñas */
+  }
+  
+  .mapa {
     width: 100%;
-    height: 100%;
-}
-.mapa{
     height: 250px;
-    width: auto;
-    margin: 10px 10px 10px;
-}
+    margin: 10px 0; /* Ajuste de margen en la parte inferior */
+  }
+  
+  /* Media Query para dispositivos con ancho máximo de 768px */
+  @media only screen and (max-width: 768px) {
+    .conctactos-section {
+      grid-template-areas: 
+        "Titulo"
+        "Icono"
+        "Horarios"
+        "Mapa";
+    }
+  
+    .contactos-horarios section {
+      flex-basis: 100%; /* Ajuste de ancho para ocupar el 100% en pantallas más pequeñas */
+    }
+  }
+  
