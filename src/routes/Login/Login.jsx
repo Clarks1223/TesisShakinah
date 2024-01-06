@@ -15,14 +15,18 @@ export const Login = () => {
   const onSubmit = async (data) => {
     try {
       await signIn(data.email, data.contrasenia);
-      console.log(`item recuperado${userInformation}`);
       userInformation.Rol === "Administrador"
         ? navigate("/Administrador")
         : navigate("/Usuario");
     } catch (error) {
-      navigate("/Login")
-      console.error("Error durante el inicio de sesión:", error.message);
-      alert("Verifique sus credenciales");
+      navigate("/Login");
+      if (error.code === "auth/invalid-credential") {
+        alert(
+          "Credenciales inválidas. Verifique su correo electrónico y contraseña."
+        );
+      } else {
+        alert("Algo a salido mal");
+      }
     }
   };
   return (
@@ -34,7 +38,7 @@ export const Login = () => {
         <div className="form-login-correo">
           <label>Correo electronico:</label>
           {errors.email?.type === "required" && (
-            <p className="error-message">El campo es requerido</p>
+            <p className="error-message">Ingrese su correo electronico</p>
           )}
           <input
             type="email"
@@ -47,7 +51,7 @@ export const Login = () => {
         <div className="form-login-password">
           <label>Contraseña:</label>
           {errors.contrasenia?.type === "required" && (
-            <p className="error-message">El campo es requerido</p>
+            <p className="error-message">Ingrese sus contraseña</p>
           )}
           <input
             type="password"
@@ -61,6 +65,10 @@ export const Login = () => {
       </form>
 
       <section className="form-login-ingresar">
+        <p>
+          ¿Olvidaste tu contraseña? haz click
+          <Link to="/Recuperar-Contrasenia"> Aqui</Link>
+        </p>
         <p>
           ¿Nuevo en Shakinah? Regístrate
           <Link to="/Registrar"> Aqui</Link>

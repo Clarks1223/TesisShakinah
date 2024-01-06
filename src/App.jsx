@@ -10,6 +10,7 @@ import Contactos from "./routes/Home/Contactos/Contactos";
 import Servicios from "./routes/Home/Servicios/Servicios";
 import Registrar from "./routes/Registrar/Registrar";
 import Login from "./routes/Login/Login";
+import PasswordRecovery from "./routes/RecuperarContrasenia/Password-Recovery";
 //Proteger Rutas
 import ProtectedRoute from "./utils/ProtectedRoute";
 //Rutas Privadas Administrador
@@ -50,6 +51,10 @@ function App() {
               <Route path="/Servicios" element={<Servicios />} />
               <Route path="/Registrar" element={<Registrar />} />
               <Route path="/Login" element={<Login />} />
+              <Route
+                path="/Recuperar-Contrasenia"
+                element={<PasswordRecovery />}
+              />
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/Administrador/" element={<Administrador />}>

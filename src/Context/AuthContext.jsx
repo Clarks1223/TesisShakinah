@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   updatePassword,
   signOut,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 
@@ -78,7 +79,6 @@ export const AuthProvider = ({ children }) => {
       const objeto = await getDoc(refDatosUsuario);
       const objetoDatosRecuperados = objeto.exists() ? objeto.data() : {};
       console.log("El objeto recuperado essss: ", objetoDatosRecuperados);
-
       setUserInformation(objetoDatosRecuperados);
     } catch (error) {
       console.log("Algo salio mal ++");
@@ -122,6 +122,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  //Funcion para actualizar la contraseña del usuario
+  function resetPassword(email) {
+    return sendPasswordResetEmail(auth, email).then((a) => {
+      alert("Se ha enviado la restauracion a su correo electronico");
+    });
+  }
+
   // Objeto de valor para proporcionar al contexto
   const contextValue = {
     userId,
@@ -133,6 +140,7 @@ export const AuthProvider = ({ children }) => {
     signIn,
     signOut: signOutAndRedirect,
     updatePassword: updatePasswordHandler,
+    resetPassword,
   };
 
   return (
