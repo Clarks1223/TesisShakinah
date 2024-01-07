@@ -1,85 +1,36 @@
 import "./Perfil.css";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../../Context/AuthContext";
-import { useEffect, useState } from "react";
-import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
-import { fireStore, storage } from "../../../Auth/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 export const EditarPerfil = () => {
-  const { userId } = useAuth();
-  const [objetoDatos, setObjetosDatos] = useState({
-    Nombre: "",
-    Apellido: "",
-    Correo: "",
-    Telefono: "",
-  });
+  const { userId, userInformation, cargarFotoBase, actualizarDatos } =
+    useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
     formState: { errors },
     handleSubmit,
-    setValue, // Added setValue from react-hook-form to set values dynamically
-  } = useForm({
-    defaultValues: objetoDatos,
-  });
-
-  // Pasos para actualizar la informacion del usuario
-
-  // 2. Obtener la informacion del usuario en base al id
-  const getUserInformation = async (id) => {
-    try {
-      const refDatosUsuario = doc(collection(fireStore, "UsuariosLogin"), id);
-      const objeto = await getDoc(refDatosUsuario);
-      const objetoDatosRecuperados = objeto.exists() ? objeto.data() : {};
-      console.log("El objeto recuperado es: ", objetoDatosRecuperados);
-
-      // Set values dynamically using setValue
-      Object.keys(objetoDatosRecuperados).forEach((key) => {
-        setValue(key, objetoDatosRecuperados[key]);
-      });
-
-      setObjetosDatos(objetoDatosRecuperados);
-      console.log("datos en el estado:", objetoDatos);
-    } catch (error) {
-      console.log("Error al traer los datos");
-    }
-  };
+    setValue,
+  } = useForm({});
 
   useEffect(() => {
-    getUserInformation(userId);
-  }, [userId, setValue]); // Add setValue as a dependency to useEffect
-
-  //Logica para cargar la foto
-  const cargarFoto = async (foto) => {
-    const archivo = foto[0];
-    const refArchivo = ref(storage, `Empleados/${archivo.name}`);
-    await uploadBytes(refArchivo, archivo);
-    const urlImgDescargar = await getDownloadURL(refArchivo);
-    return urlImgDescargar;
-  };
+    //carga los valores en el formulario
+    Object.keys(userInformation).forEach((key) => {
+      setValue(key, userInformation[key]);
+    });
+  }, []);
 
   const onSubmit = async (data) => {
     try {
-      const Nombre = data.Nombre;
-      const Apellido = data.Apellido;
-      const Correo = data.Correo;
-      const Telefono = data.Telefono;
-
-      // Cargar la foto y obtener la URL de descarga
-      const urlImgDescargar = await cargarFoto(data.foto);
-
+      // Cargar la foto y obtener la URL de descarga, enviar la foto y la direccion de la carpeta donde se almacenara
+      const urlImgDescargar = await cargarFotoBase(data.Foto, "Empleados");
+      data.Foto = urlImgDescargar;
       // Actualizar solo el campo de la foto en el documento
-      const referenciaUsuarioLogin = doc(fireStore, "UsuariosLogin", userId);
-      await updateDoc(referenciaUsuarioLogin, {
-        Nombre: Nombre,
-        Apellido: Apellido,
-        Correo: Correo,
-        Telefono: Telefono,
-        Foto: urlImgDescargar,
-      });
-      
-
+      actualizarDatos("UsuariosLogin", data, userId);
       alert("Su perfil se ha actualizado correctamente");
+      navigate("/Usuario");
     } catch (error) {
       console.error(error);
       alert("Algo salió mal");
@@ -145,12 +96,7 @@ export const EditarPerfil = () => {
         </div>
         <div>
           <label>Correo</label>
-          <input
-            {...register("Correo", {
-            })}
-            maxLength={30}
-            disabled
-          />
+          <input {...register("Correo", {})} maxLength={30} disabled />
         </div>
         <div>
           <label>Celular</label>
@@ -174,13 +120,13 @@ export const EditarPerfil = () => {
         </div>
         <div>
           <label>Foto</label>
-          {errors.foto?.type === "required" && (
+          {errors.Foto?.type === "required" && (
             <p className="error">La foto es obligatoria</p>
           )}
           <input
             type="file"
             accept="Image/*"
-            {...register("foto", {
+            {...register("Foto", {
               required: true,
             })}
           />

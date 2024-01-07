@@ -1,34 +1,21 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import "./Login.css";
 
 export const Login = () => {
-  const { signIn, userInformation } = useAuth();
-  const navigate = useNavigate();
+  const { signIn } = useAuth();
+
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
 
-  const onSubmit = async (data) => {
-    try {
-      await signIn(data.email, data.contrasenia);
-      userInformation.Rol === "Administrador"
-        ? navigate("/Administrador")
-        : navigate("/Usuario");
-    } catch (error) {
-      navigate("/Login");
-      if (error.code === "auth/invalid-credential") {
-        alert(
-          "Credenciales inválidas. Verifique su correo electrónico y contraseña."
-        );
-      } else {
-        alert("Algo a salido mal");
-      }
-    }
+  const onSubmit = (data) => {
+    signIn(data.email, data.contrasenia);
   };
+
   return (
     <div className="login-container">
       <header className="tituloForm">

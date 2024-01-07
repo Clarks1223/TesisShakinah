@@ -11,6 +11,7 @@ export const ServiciosItem = (props) => {
       precio: props.precio,
       foto: props.foto,
       nombreEmpleado: props.nombreEmpleado,
+      EmpleadoID: props.EmpleadoID,
     };
     // Verificar si ya existe una cita con el mismo ID
     const citaExistente = cita.find((c) => c.id === nuevaCita.id);

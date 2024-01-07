@@ -3,8 +3,11 @@ import "./ServiciosComponents.css";
 import { useState, useEffect } from "react";
 import { fireStore } from "../../../Auth/firebase";
 import { collection, getDocs } from "firebase/firestore";
+
 export const ServiciosComponent = (props) => {
+
   const [servicios, setServicio] = useState([]);
+
   const fetchData = async () => {
     const collectionServicios = collection(fireStore, `Servicios`);
     const resp = await getDocs(collectionServicios);
@@ -18,6 +21,7 @@ export const ServiciosComponent = (props) => {
   useEffect(() => {
     fetchData();
   }, []);
+  
   return (
     <>
       <section className="servicios-seccion">
@@ -34,6 +38,7 @@ export const ServiciosComponent = (props) => {
               precio={servicio.Costo}
               foto={servicio.Foto}
               nombreEmpleado={props.nombreEmpleado}
+              EmpleadoID={props.EmpleadoID}
               id={servicio.id}
             />
           ))}

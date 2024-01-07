@@ -1,8 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import "./ResumenCita.css";
 export const ResumenCita = (props) => {
   const [cancelar, setCancelar] = useState(props.estado);
-  console.log("el estado es:", cancelar);
+
+  const elimnarCitas = async () => {
+    if (
+      window.confirm(
+        "Esta seguro de elimnar esta cita, no podra revertir esta accion"
+      )
+    ) {
+      setCancelar("Finalizado");
+    }
+  };
+
   return (
     <section className="contenedor-citas">
       <section className="contendor-titulo">
@@ -35,11 +45,7 @@ export const ResumenCita = (props) => {
         </div>
       </section>
       <section className="contenedor-botones">
-        <button
-          onClick={() => {
-            setCancelar("Cancelado");
-          }}
-        >
+        <button onClick={elimnarCitas}>
           {cancelar === "Activo" ? "Cancelar" : "Eliminar Item"}
         </button>
       </section>

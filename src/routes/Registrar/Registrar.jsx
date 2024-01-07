@@ -1,60 +1,22 @@
 import { useForm } from "react-hook-form";
 import "./Registrar.css";
-import { fireStore, auth } from "../../Auth/firebase";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-} from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
 import validationRules from "./ValidacionesRegistrar..js";
-import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../../Context/AuthContext.jsx";
 export const Registrar = () => {
-  const navigate = useNavigate();
 
+  const { registerUser } = useAuth();
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
 
-  async function registrarUsuario(data) {
-    try {
-      const infoUsuario = await createUserWithEmailAndPassword(
-        auth,
-        data.email,
-        data.contrasenia
-      );
-
-      //para enviar un correo de verificacion
-      await sendEmailVerification(infoUsuario.user);
-
-      const docRef = doc(fireStore, `UsuariosLogin/${infoUsuario.user.uid}`);
-
-      setDoc(docRef, {
-        Nombre: data.nombre,
-        Apellido: data.apellido,
-        Correo: data.email,
-        Telefono: data.telefono,
-        Rol: "usuario",
-        Foto: "https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/General%2FIcono-Usuario-Default.png?alt=media&token=5d2e75e3-810f-4229-b636-e68ad269d331",
-      });
-      navigate("/Login");
-      alert(
-        "Cuenta creada exitosamente, Verifica la cuenta de correo para confirmar tu cuenta"
-      );
-    } catch (error) {
-      if (error.code === "auth/email-already-in-use") {
-        alert(
-          "Este correo ya se encuentra registrado. Por favor, utiliza otro correo electrónico."
-        );
-      } else {
-        alert("Error al registrar usuario");
-      }
-    }
-  }
   const onSubmit = (data) => {
-    registrarUsuario(data);
+    const autoCompleteInfo = {
+      usuario: "usuario",
+      foto: "https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/General%2FIcono-Usuario-Default.png?alt=media&token=5d2e75e3-810f-4229-b636-e68ad269d331",
+    };
+    registerUser(data, autoCompleteInfo);
   };
 
   return (

@@ -4,8 +4,8 @@ import { useAuth } from "../../Context/AuthContext";
 
 export const MenuDashboard = (props) => {
   const { signOut, userInformation } = useAuth();
-  const cerrarSesion = async () => {
-    await signOut();
+  const cerrarSesion = () => {
+    signOut();
   };
 
   return (

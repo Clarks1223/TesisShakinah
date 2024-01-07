@@ -7,9 +7,9 @@ export const Usuario = () => {
     <section className="pantalla-administrador">
       <section className="administrador-menu">
         <MenuDashboard
-          boton1="Agendar cita"
+          boton1="Carrito de citas"
           direccion1="/Usuario/Agendar"
-          boton2="Ver citas agendadas"
+          boton2="Historial de citas"
           direccion2="/Usuario/VerCitas"
           boton3="Editar perfil"
           direccion3="/Usuario/Perfil"

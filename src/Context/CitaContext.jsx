@@ -1,12 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { fireStore } from "../Auth/firebase";
+import { collection, addDoc } from "firebase/firestore";
+import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // Crea un contexto para la cita
 export const CitaContext = createContext();
 
 // Proveedor de contexto para gestionar el estado de la cita
 export const CitaProvider = ({ children }) => {
-  // Estado para almacenar la información de la cita
+  const navigate = useNavigate();
+  const { userId } = useAuth();
 
+  // Estado para almacenar la información de la cita
   const [cita, setCita] = useState([]);
 
   const agregarCita = (nuevaCita) => {
@@ -15,6 +21,18 @@ export const CitaProvider = ({ children }) => {
   };
   const eliminarCita = async (id) => {
     setCita((prevCita) => prevCita.filter((c) => c.id !== id));
+  };
+  //agendar agregar cita a la base
+
+  const agendarCitaBase = async (data, idcita) => {
+    try {
+      await addDoc(collection(fireStore, `Citas`), data);
+      alert("Su cita se ha agendado correctamente");
+      eliminarCita(idcita);
+      navigate("/Usuario/VerCitas");
+    } catch (error) {
+      alert("Ocurrio un problema");
+    }
   };
 
   useEffect(() => {
@@ -26,6 +44,7 @@ export const CitaProvider = ({ children }) => {
     cita,
     agregarCita,
     eliminarCita,
+    agendarCitaBase,
   };
 
   return (

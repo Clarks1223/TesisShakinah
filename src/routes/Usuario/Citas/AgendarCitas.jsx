@@ -10,11 +10,12 @@ export const ListarCitas = () => {
       </section>
       <section className="Persona">
         <section className="lista-empelados">
-          {Array.isArray(cita) ? (
+          {Array.isArray(cita) && cita.length > 0 ? (
             cita.map((citas) => (
               <ItemCita
                 key={citas.id}
                 nombreEmpleado={citas.nombreEmpleado}
+                EmpleadoID={citas.EmpleadoID}
                 foto={citas.foto}
                 titulo={citas.titulo}
                 precio={citas.precio}
@@ -22,7 +23,10 @@ export const ListarCitas = () => {
               />
             ))
           ) : (
-            <p>No hay citas disponibles.</p>
+            <p>
+              Seleccione un item en la seccion de servicios para agendar una
+              cita.
+            </p>
           )}
         </section>
       </section>

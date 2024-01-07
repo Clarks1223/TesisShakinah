@@ -2,12 +2,12 @@ import React from "react";
 import "./ItemCita.css";
 import { useCita } from "../../Context/CitaContext";
 import { useForm } from "react-hook-form";
-import { fireStore } from "../../Auth/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { useAuth } from "../../Context/AuthContext";
 
 const ItemCita = (props) => {
-  const { eliminarCita } = useCita();
-  const lol = "222222222";
+  const { userId } = useAuth();
+  const { eliminarCita, agendarCitaBase } = useCita();
+
   const {
     register,
     handleSubmit,
@@ -23,19 +23,17 @@ const ItemCita = (props) => {
     const now = new Date();
     return now.toTimeString().slice(0, 5);
   };
-  const onSubmit = async (data) => {
-    try {
-      data.Empleado = props.nombreEmpleado;
-      data.Foto = props.foto;
-      data.Titulo = props.titulo;
-      data.Precio = props.precio;
-      data.Estado = "Activo";
-      await addDoc(collection(fireStore, `Citas-${lol}`), data);
-      alert("Se ha agregado una cita: ");
-    } catch (error) {
-      console.log(error);
-      alert("Algo salio mal");
-    }
+
+  const onSubmit = (data) => {
+    data.Empleado = props.nombreEmpleado;
+    data.IDEmpleado = props.EmpleadoID;
+    data.IDUsuario = userId;
+    data.IDservicio = props.id;
+    data.Foto = props.foto;
+    data.Titulo = props.titulo;
+    data.Precio = props.precio;
+    data.Estado = "Activo";
+    agendarCitaBase(data, props.id);
   };
 
   return (
