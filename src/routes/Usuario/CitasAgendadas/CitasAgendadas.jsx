@@ -8,7 +8,7 @@ export const VerCitas = () => {
 
   useEffect(() => {
     historialCitas("Citas", "IDUsuario", setCitas);
-  }, []);
+  }, [citas]);
 
   return (
     <>
@@ -29,6 +29,7 @@ export const VerCitas = () => {
                 personal={cita.Empleado}
                 costo={cita.Precio}
                 estado={cita.Estado}
+                iditem={cita.id}
               />
             ))}
           </section>

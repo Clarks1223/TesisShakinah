@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { fireBaseApp, fireStore,storage } from "../Auth/firebase";
+import { fireBaseApp, fireStore, storage } from "../Auth/firebase";
 import { useNavigate } from "react-router-dom";
 import {
   getAuth,
@@ -19,6 +19,7 @@ import {
   query,
   where,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -213,10 +214,17 @@ export const AuthProvider = ({ children }) => {
   //Funcion para actualizar los datos de una tabla
   //si quiero cambiar un solo dato, se recomienda enviar solo un campo en lugar de data
   const actualizarDatos = async (tablaReferencia, data, id) => {
-    const referenciaUsuarioLogin = doc(fireStore, tablaReferencia, id);
-    await updateDoc(referenciaUsuarioLogin, data);
+    const referencia = doc(fireStore, tablaReferencia, id);
+    await updateDoc(referencia, data);
   };
   //Funcion para eliminar citas de la base
+  const eliminar = async (tabla, id) => {
+    try {
+      await deleteDoc(doc(fireStore, tabla, id));
+    } catch (error) {
+      alert("A ocurrido un problema");
+    }
+  };
 
   // Objeto de valor para proporcionar al contexto
   const contextValue = {
@@ -233,6 +241,7 @@ export const AuthProvider = ({ children }) => {
     resetPassword,
     historialCitas,
     actualizarDatos,
+    eliminar,
     cargarFotoBase,
   };
 

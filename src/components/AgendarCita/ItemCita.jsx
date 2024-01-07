@@ -16,7 +16,14 @@ const ItemCita = (props) => {
 
   const getCurrentDate = () => {
     const today = new Date();
-    return today.toISOString().split("T")[0];
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    const fechaFormateada = today.toLocaleDateString("es-ES", options);
+    return fechaFormateada;
   };
 
   const getCurrentTime = () => {
@@ -58,7 +65,7 @@ const ItemCita = (props) => {
             {...register("Fecha", { required: true })}
             min={getCurrentDate()}
           />
-          {errors.fecha && (
+          {errors.Fecha && (
             <span className="error-message">Campo obligatorio</span>
           )}
         </div>
@@ -77,7 +84,7 @@ const ItemCita = (props) => {
               },
             })}
           />
-          {errors.hora && (
+          {errors.Hora && (
             <span className="error-message">
               Selecciona una hora entre las 8 am y las 5 pm
             </span>

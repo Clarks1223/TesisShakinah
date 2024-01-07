@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ListaEmpleados from "../../../components/ListaEmpleados/ListaEmpleados.jsx";
 import { fireStore } from "../../../Auth/firebase.js";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
+import { useAuth } from "../../../Context/AuthContext.jsx";
 import { Link, Outlet } from "react-router-dom";
 const VerEmpleados = () => {
-
+  const { eliminar } = useAuth();
   const [dsp1, setDsp1] = useState(true);
 
   const [empleados, setEmpleados] = useState([]);
@@ -24,7 +25,7 @@ const VerEmpleados = () => {
 
   const eliminarEmpleado = async (id) => {
     try {
-      await deleteDoc(doc(fireStore, "Personal", id));
+      eliminar("Personal", id);
       setEmpleados((prevEmpleados) => prevEmpleados.filter((e) => e.id !== id));
       console.log("Empleado eliminado");
     } catch (error) {
