@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import "./AgregarServicio.css";
+import "./ActualizarServicio.css";
 import { validateCosto } from "../../../../utils/formValidator";
 import { useAuth } from "../../../../Context/AuthContext";
 
@@ -12,7 +12,6 @@ export const ActualizarServicio = () => {
     cargarFotoBase,
     verItem,
     actualizarDatos,
-    subirItemBD,
   } = useAuth();
   const [dbValores, setDBValores] = useState({
     Titulo: "",
@@ -49,7 +48,7 @@ export const ActualizarServicio = () => {
     };
 
     fetchData();
-  }, []);
+  }, [itemID]);
   const onSubmit = async (data) => {
     try {
       const { Titulo, Empleado, Costo, Foto } = data;
@@ -62,13 +61,8 @@ export const ActualizarServicio = () => {
         Costo,
         Foto: urlImgDescargar,
       };
-      if (itemID == "") {
-        subirItemBD("Servicios", newServicio);
-        //Add navigate para salir del formulario
-      } else {
-        actualizarDatos("Servicios", newServicio, itemID);
-        setItemID("");
-      }
+      actualizarDatos("Servicios", newServicio, itemID);
+      setItemID("");
     } catch (error) {
       alert("Algo salió mal");
     }

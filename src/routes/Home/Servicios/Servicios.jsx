@@ -16,7 +16,6 @@ export const Servicios = () => {
               nombreEmpleado={`${empleado.Nombre} ${empleado.Apellido}`}
               EmpleadoID={empleado.id}
             />
-            <p>El ide de empleado que se enviara es: {empleado.id}</p>
           </>
         ))}
       </section>

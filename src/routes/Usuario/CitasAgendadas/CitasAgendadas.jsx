@@ -4,10 +4,10 @@ import "./CitasAgendadas.css";
 import { useAuth } from "../../../Context/AuthContext";
 export const VerCitas = () => {
   const [citas, setCitas] = useState([]);
-  const { historialCitas } = useAuth();
+  const { historialCitas, userId } = useAuth();
 
   useEffect(() => {
-    historialCitas("Citas", "IDUsuario", setCitas);
+    historialCitas("Citas", "IDUsuario", setCitas, userId);
   }, [citas]);
 
   return (

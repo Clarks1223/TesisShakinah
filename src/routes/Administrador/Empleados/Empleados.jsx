@@ -1,35 +1,40 @@
 import React, { useEffect, useState } from "react";
 import ListaEmpleados from "../../../components/ListaEmpleados/ListaEmpleados.jsx";
-import { fireStore } from "../../../Auth/firebase.js";
-import { collection, getDocs } from "firebase/firestore";
 import { useAuth } from "../../../Context/AuthContext.jsx";
 import { Link, Outlet } from "react-router-dom";
 const VerEmpleados = () => {
-  const { eliminar } = useAuth();
-  const [dsp1, setDsp1] = useState(true);
+  const { verItems, eliminar, setItemID, itemID, historialCitas } = useAuth();
 
+  const [dsp1, setDsp1] = useState(true);
   const [empleados, setEmpleados] = useState([]);
+  const [citas, setCitas] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const empleadosRef = collection(fireStore, "Personal");
-      const resp = await getDocs(empleadosRef);
-      setEmpleados(
-        resp.docs.map((doc) => {
-          return { ...doc.data(), id: doc.id };
-        })
-      );
-    };
-    fetchData();
-  }, [empleados]);
+    verItems("Personal", setEmpleados);
+    setItemID("");
+  }, [dsp1]);
+
+  useEffect(() => {
+    console.log("itemID", citas);
+    historialCitas("Citas", "IDEmpleado", setCitas, itemID);
+  }, []);
 
   const eliminarEmpleado = async (id) => {
-    try {
-      eliminar("Personal", id);
-      setEmpleados((prevEmpleados) => prevEmpleados.filter((e) => e.id !== id));
-      console.log("Empleado eliminado");
-    } catch (error) {
-      console.error("Error al eliminar el empleado:", error);
+    if (window.confirm("¿Esta seguro de elinminar este item?")) {
+      try {
+        const existenCitas = citas.some((cita) => cita.IDEmpleado === id);
+        if (existenCitas) {
+          alert(
+            "Actualmente existen citas agendadas para este usuario, primero elimine las citas"
+          );
+        } else {
+          console.log("se ha eliminado, ya que citas contiene: ", citas);
+          //Falta elimnar datos de inicio de sesion de usaurio
+          //eliminar("Personal", id);
+        }
+      } catch (error) {
+        alert("Ha ocurrido un error", error);
+      }
     }
   };
 

@@ -3,28 +3,28 @@ import React from "react";
 import { useAuth } from "../../Context/AuthContext";
 import { Link } from "react-router-dom";
 
-const ListaServicios = ({ empleados, onDelete, pantalla }) => {
+const ListaServicios = ({ items, onDelete, pantalla }) => {
   const { setItemID } = useAuth();
   return (
     <>
-      {empleados.map((empleado) => (
-        <section className="Persona" key={empleado.id}>
+      {items.map((item) => (
+        <section className="Persona" key={item.id}>
           <section className="descripcion">
-            <p>{empleado.Nombre ? empleado.Nombre : empleado.Titulo}</p>
+            <p>{item.Nombre ? item.Nombre : item.Titulo}</p>
           </section>
           <section className="imagen">
-            <img src={empleado.Foto} alt="Empleado" />
+            <img src={item.Foto} alt="Empleado" />
           </section>
           <section className="descripcion">
-            <p>{empleado.Cargo ? empleado.Cargo : `${empleado.Costo}$`}</p>
-            <p>{empleado.Empleado}</p>
+            <p>{item.Cargo ? item.Cargo : `${item.Costo}$`}</p>
+            <p>{item.Empleado}</p>
           </section>
           <section className="botones">
             <Link to="/Administrador/Servicios/Nuevo">
               <button
                 className="modificar"
                 onClick={() => {
-                  setItemID(empleado.id);
+                  setItemID(item.id);
                   pantalla(false);
                 }}
               >
@@ -32,7 +32,7 @@ const ListaServicios = ({ empleados, onDelete, pantalla }) => {
               </button>
             </Link>
 
-            <button className="eliminar" onClick={() => onDelete(empleado.id)}>
+            <button className="eliminar" onClick={() => onDelete(item.id)}>
               Eliminar
             </button>
           </section>

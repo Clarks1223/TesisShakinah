@@ -18,8 +18,10 @@ import Administrador from "./routes/Administrador/Dashboard/Administrador";
 import VerEmpleados from "./routes/Administrador/Empleados/Empleados";
 import AgregarEmpleado from "./routes/Administrador/Empleados/Agregar/AgregarEmpleado";
 import AgregarServicio from "./routes/Administrador/Servicios/Nuevo/AgregarServicio";
+import ActualizarServicio from "./routes/Administrador/Servicios/Actualizar/ActualizarServicio";
 import ResumenCitas from "./routes/Administrador/ResumenCitas/ResumenCitas";
 import ResumenServicios from "./routes/Administrador/Servicios/ResumenServicios";
+
 //Rutas generales
 import Password from "./components/Password/Password";
 import ErrorRoute from "./routes/Error/Error";
@@ -60,10 +62,12 @@ function App() {
                 <Route path="/Administrador/" element={<Administrador />}>
                   <Route path="Personal/" element={<VerEmpleados />}>
                     <Route path="Nuevo" element={<AgregarEmpleado />} />
+                    
                   </Route>
                   <Route path="Citas" element={<ResumenCitas />} />
                   <Route path="Servicios/" element={<ResumenServicios />}>
                     <Route path="Nuevo" element={<AgregarServicio />} />
+                    <Route path="Actualizar" element={<ActualizarServicio />} />
                   </Route>
                   <Route path="Password" element={<Password />} />
                 </Route>

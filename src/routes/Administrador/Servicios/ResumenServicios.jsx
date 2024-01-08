@@ -1,36 +1,42 @@
 import React, { useEffect, useState } from "react";
 import ListaServicios from "../../../components/ListaServicios/ListaServicios.jsx";
 import "../Empleados/Empleados.css";
-import { fireStore } from "../../../Auth/firebase.js";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { Link, Outlet } from "react-router-dom";
+import { useAuth } from "../../../Context/AuthContext.jsx";
 
 export const ResumenServicios = (props) => {
   const [dsp1, setDsp1] = useState(true);
-  const [empleados, setEmpleados] = useState([]);
+  const [items, setItems] = useState([]);
+  //funciones para manejar los datos de la base
+  const { verItems, eliminar, itemID, setItemID, historialCitas } = useAuth();
+  const [citas, setCitas] = useState([]);
+  let cont = 0;
+  useEffect(() => {
+    verItems("Servicios", setItems);
+    setItemID("");
+  }, [dsp1]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const empleadosRef = collection(fireStore, "Servicios");
-      const resp = await getDocs(empleadosRef);
-      setEmpleados(
-        resp.docs.map((doc) => {
-          return { ...doc.data(), id: doc.id };
-        })
-      );
-    };
-    fetchData();
-  }, [empleados]);
+    historialCitas("Citas", "IDservicio", setCitas, itemID);
+    console.log("Se ha ejecutado este codigo: ", (cont = cont + 1));
+  }, []);
 
-  const eliminarEmpleado = async (id) => {
-    // Eliminar el empleado de Firestore
-    try {
-      await deleteDoc(doc(fireStore, "Servicios", id));
-      // Actualizar el estado para reflejar el cambio en la UI
-      setEmpleados((prevEmpleados) => prevEmpleados.filter((e) => e.id !== id));
-      console.error("Servicio Eliminado");
-    } catch (error) {
-      console.error("Error al eliminar el servicio:", error);
+  const eliminarServicio = async (id) => {
+    if (window.confirm("¿Esta seguro de elinminar este item?")) {
+      try {
+        //const existenCitas = citas.length > 0;
+        const existenCitas = citas.some((cita) => cita.IDservicio === id);
+        if (existenCitas) {
+          alert(
+            "Actualmente existen citas agendadas con este servicio, primero elimine las citas"
+          );
+        } else {
+          console.log("se ha eliminado, ya que citas contiene: ", citas);
+          //eliminar("Servicios", id);
+        }
+      } catch (error) {
+        alert("Ha ocurrido un error", error);
+      }
     }
   };
 
@@ -45,7 +51,7 @@ export const ResumenServicios = (props) => {
             dsp1 ? "/Administrador/Servicios/Nuevo" : "/Administrador/Servicios"
           }
         >
-          <button onClick={() => setDsp1(!dsp1) }>
+          <button onClick={() => setDsp1(!dsp1)}>
             {dsp1 ? "Agregar servicio" : "Lista de servicios"}
           </button>
         </Link>
@@ -53,11 +59,15 @@ export const ResumenServicios = (props) => {
       <section className="Persona">
         {dsp1 ? (
           <section className="lista-empelados">
-            <ListaServicios
-              empleados={empleados}
-              onDelete={eliminarEmpleado}
-              pantalla={setDsp1}
-            />
+            {items.length < 1 ? (
+              "Aun no se han registrado servicios"
+            ) : (
+              <ListaServicios
+                items={items}
+                onDelete={eliminarServicio}
+                pantalla={setDsp1}
+              />
+            )}
           </section>
         ) : (
           <Outlet />

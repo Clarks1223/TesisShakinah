@@ -20,6 +20,7 @@ import {
   where,
   updateDoc,
   deleteDoc,
+  addDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -70,7 +71,7 @@ export const AuthProvider = ({ children }) => {
       unsubscribe();
     };
   }, [user, userId]);
-
+  let contador = 0;
   //Logica de traer los nombres de los empleados una sola vez y reutilizarlos siempre en la aplicacion
   const nombresEmpleados = async () => {
     const collectionEmpleados = collection(fireStore, "Personal");
@@ -80,6 +81,10 @@ export const AuthProvider = ({ children }) => {
       resp.docs.map((doc) => {
         return { ...doc.data(), id: doc.id };
       })
+    );
+    console.log(
+      "cuatas veces se ejecuta el codigo que trae los empleados: ",
+      (contador = contador + 1)
     );
   };
   //Cargar datos del usuario que inicio sesion sin id
@@ -93,7 +98,7 @@ export const AuthProvider = ({ children }) => {
       const objetoDatosRecuperados = objeto.exists() ? objeto.data() : {};
       setUserInformation(objetoDatosRecuperados);
     } catch (error) {
-      console.log("fallo al traer datos del usuario");
+      console.log("fallo al traer datos del usuario: ", error);
     }
   };
 
@@ -109,11 +114,18 @@ export const AuthProvider = ({ children }) => {
   // Función para iniciar sesión
   const signIn = async (email, password) => {
     try {
-      // Realizar inicio de sesión con Firebase
       await signInWithEmailAndPassword(auth, email, password);
-      userInformation.Rol === "Administrador"
-        ? navigate("/Administrador")
-        : navigate("/Usuario");
+      if (auth.currentUser) {
+        setUser(auth.currentUser);
+        setUserId(auth.currentUser.uid);
+        console.log(
+          "Datos almacenados de usuarioInformacion:",
+          userInformation
+        );
+        userInformation.Rol === "Administrador"
+          ? navigate("/Administrador")
+          : navigate("/Usuario");
+      }
     } catch (error) {
       navigate("/Login");
       if (error.code === "auth/invalid-credential") {
@@ -133,6 +145,8 @@ export const AuthProvider = ({ children }) => {
       // Redirigir al usuario a la página de login después de cerrar sesión
       navigate("/login");
       setUser(null);
+      setUserId(null);
+      setUserInformation(null);
     } catch (error) {
       console.error("Error al cerrar sesión:", error.message);
       throw error;
@@ -161,45 +175,43 @@ export const AuthProvider = ({ children }) => {
   }
 
   //Funcion para crear a un usuario
-  const registerUser = async (data, autoCompleteInfo) => {
+  const registerUser = async (data, tablaReferencia) => {
     try {
       const infoUsuario = await createUserWithEmailAndPassword(
         auth,
-        data.email,
-        data.contrasenia
+        data.Email,
+        data.Contrasenia
       );
-      await sendEmailVerification(infoUsuario.user);
-      const docRef = doc(fireStore, `UsuariosLogin/${infoUsuario.user.uid}`);
-      setDoc(docRef, {
-        Nombre: data.nombre,
-        Apellido: data.apellido,
-        Correo: data.email,
-        Telefono: data.telefono,
-        Rol: autoCompleteInfo.usuario,
-        Foto: autoCompleteInfo.foto,
-      });
+      const { Contrasenia, ...dataSinContrasenia } = data;
+      if (tablaReferencia === "UsuariosLogin") {
+        await sendEmailVerification(infoUsuario.user);
+      } else {
+        console.log("Nuevo empleado agregado con exito");
+      }
+      const docRef = doc(
+        fireStore,
+        `${tablaReferencia}/${infoUsuario.user.uid}`
+      );
+      setDoc(docRef, dataSinContrasenia);
       navigate("/Login");
-      alert(
-        "Cuenta creada exitosamente, Verifica la cuenta de correo para confirmar tu cuenta"
-      );
+      alert("Cuenta creada exitosamente, Verifica tu cuenta de correo");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         alert(
           "Este correo ya se encuentra registrado. Por favor, utiliza otro correo electrónico."
         );
       } else {
-        alert("Error al registrar usuario");
+        alert("Error al registrar usuario: ", error);
       }
     }
   };
+
   //Funcion para mostrar el historial de citas agendadas en la base x usuario
   //para mostrar por empleado, envie el id del empleado en userId
-  const historialCitas = async (tabla, campoRef, setGuardar) => {
+  const historialCitas = async (tabla, campoRef, setGuardar, id) => {
     try {
       const refCitas = collection(fireStore, tabla);
-      const q = userId
-        ? query(refCitas, where(campoRef, "==", userId))
-        : refCitas;
+      const q = id ? query(refCitas, where(campoRef, "==", id)) : refCitas;
       getDocs(q).then((resp) => {
         setGuardar(
           resp.docs.map((doc) => {
@@ -214,16 +226,52 @@ export const AuthProvider = ({ children }) => {
   //Funcion para actualizar los datos de una tabla
   //si quiero cambiar un solo dato, se recomienda enviar solo un campo en lugar de data
   const actualizarDatos = async (tablaReferencia, data, id) => {
-    const referencia = doc(fireStore, tablaReferencia, id);
-    await updateDoc(referencia, data);
+    try {
+      const referencia = doc(fireStore, tablaReferencia, id);
+      await updateDoc(referencia, data);
+      alert("Item Actualizado correctamente");
+    } catch (error) {
+      alert("Ha ocurrido un problema");
+    }
   };
-  //Funcion para eliminar citas de la base
+  //Funcion para eliminar elementos de la base
   const eliminar = async (tabla, id) => {
     try {
       await deleteDoc(doc(fireStore, tabla, id));
+      alert("Se ha eliminado el item correctamente");
     } catch (error) {
       alert("A ocurrido un problema");
     }
+  };
+  //Mostar todos los items de cualquier unido con su id
+  const verItems = async (tablaReferencia, guardar) => {
+    const itemsRef = collection(fireStore, tablaReferencia);
+    const resp = await getDocs(itemsRef);
+    guardar(
+      resp.docs.map((doc) => {
+        return { ...doc.data(), id: doc.id };
+      })
+    );
+  };
+
+  //Mostar solo un items de cualquier tabla unido con su id
+  const verItem = async (tablaReferencia, id) => {
+    try {
+      const referenciaItem = doc(collection(fireStore, tablaReferencia), id);
+      const item = await getDoc(referenciaItem);
+      const objeto = item.exists() ? item.data() : {};
+      return objeto;
+    } catch (error) {
+      console.error("Error al obtener el item:", error);
+    }
+  };
+
+  //Subir datos a una tabla
+  const subirItemBD = async (tablaReferencia, data) => {
+    try {
+      await addDoc(collection(fireStore, tablaReferencia), data);
+      alert("Nuevo item agregado");
+    } catch (error) {}
   };
 
   // Objeto de valor para proporcionar al contexto
@@ -240,6 +288,9 @@ export const AuthProvider = ({ children }) => {
     registerUser,
     resetPassword,
     historialCitas,
+    verItem,
+    verItems,
+    subirItemBD,
     actualizarDatos,
     eliminar,
     cargarFotoBase,

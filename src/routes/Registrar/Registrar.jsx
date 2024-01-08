@@ -3,7 +3,6 @@ import "./Registrar.css";
 import validationRules from "./ValidacionesRegistrar..js";
 import { useAuth } from "../../Context/AuthContext.jsx";
 export const Registrar = () => {
-
   const { registerUser } = useAuth();
   const {
     register,
@@ -13,10 +12,13 @@ export const Registrar = () => {
 
   const onSubmit = (data) => {
     const autoCompleteInfo = {
-      usuario: "usuario",
-      foto: "https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/General%2FIcono-Usuario-Default.png?alt=media&token=5d2e75e3-810f-4229-b636-e68ad269d331",
+      Usuario: "usuario",
+      Foto: "https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/General%2FIcono-Usuario-Default.png?alt=media&token=5d2e75e3-810f-4229-b636-e68ad269d331",
     };
-    registerUser(data, autoCompleteInfo);
+    data.Rol = autoCompleteInfo.Usuario;
+    data.Foto = autoCompleteInfo.Foto;
+    console.log("datos que se enviaran al sistema", data);
+    registerUser(data, "UsuariosLogin");
   };
 
   return (
@@ -45,7 +47,7 @@ export const Registrar = () => {
               <p className="alerta">{validationRules[field].pattern.message}</p>
             )}
             <input
-              type={field === "contrasenia" ? "password" : "text"}
+              type={field === "Contrasenia" ? "password" : "text"}
               placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
               {...register(field, validationRules[field])}
               maxLength={field === "telefono" ? 10 : 30}

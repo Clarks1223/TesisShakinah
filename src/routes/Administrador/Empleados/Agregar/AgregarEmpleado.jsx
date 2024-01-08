@@ -1,13 +1,16 @@
 import "./AgregarEmpleado.css";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { auth, fireStore, storage } from "../../../../Auth/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, getDoc, collection } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useAuth } from "../../../../Context/AuthContext";
 const AgregarEmpleado = () => {
-  const { itemID, setItemID } = useAuth();
+  const {
+    itemID,
+    setItemID,
+    cargarFotoBase,
+    verItem,
+    registerUser,
+    actualizarDatos,
+  } = useAuth();
 
   const [dbValores, setDBValores] = useState({
     Nombre: "",
@@ -15,7 +18,7 @@ const AgregarEmpleado = () => {
     Email: "",
     Telefono: "",
     Cargo: "",
-    Password: "",
+    Contrasenia: "",
   });
 
   const {
@@ -27,76 +30,44 @@ const AgregarEmpleado = () => {
     defaultValues: dbValores,
   });
 
-  const getItemInformation = async (id) => {
-    try {
-      console.log("El id a utilizar es++: ", id);
-      const refDatosItem = doc(collection(fireStore, "Personal"), id);
-      const objeto = await getDoc(refDatosItem);
-      const objetoDatosRecuperados = objeto.exists() ? objeto.data() : {};
-      console.log("El objeto recuperado es: ", objetoDatosRecuperados);
-
-      // Set values dynamically using setValue
-      Object.keys(objetoDatosRecuperados).forEach((key) => {
-        setValue(key, objetoDatosRecuperados[key]);
-      });
-
-      setDBValores(objetoDatosRecuperados);
-
-      console.log("datos en el estado:", dbValores);
-    } catch (error) {
-      console.log("Error al traer los datos");
-    }
-  };
+  const [camposActivos, setCamposACtivos] = useState(false);
+  const [idEmpleado, setIDEmpleado] = useState("");
 
   useEffect(() => {
-    if (itemID === "") {
-    } else {
-      getItemInformation(itemID);
-    }
-  }, [itemID, setValue]);
+    const fetchData = async () => {
+      if (itemID !== "") {
+        try {
+          const valores = await verItem("Personal", itemID);
+          valores.Contrasenia = "123456A";
+          setIDEmpleado(itemID);
+          setDBValores(valores);
+          // Actualiza el formulario con los valores obtenidos de la base de datos
+          Object.keys(valores).forEach((key) => {
+            setValue(key, valores[key]);
+          });
+          setCamposACtivos(!camposActivos);
+        } catch (error) {
+          console.error("Error al cargar item:", error);
+        }
+      }
+    };
 
-  const cargarFoto = async (Foto) => {
-    const archivo = Foto[0];
-    const refArchivo = ref(storage, `Empleados/${archivo.name}`);
-    await uploadBytes(refArchivo, archivo);
-    const urlImgDescargar = await getDownloadURL(refArchivo);
-    return urlImgDescargar;
-  };
+    fetchData();
+  }, []);
 
   const onSubmit = async (data) => {
     try {
-      const Nombre = data.Nombre;
-      const Apellido = data.Apellido;
-      const Email = data.Email;
-      const Telefono = data.Telefono;
-      const Cargo = data.Cargo;
-      const Password = data.Password;
-      const urlImgDescargar = await cargarFoto(data.Foto);
-      const newEmpleado = {
-        Nombre: Nombre,
-        Apellido: Apellido,
-        Email: Email,
-        Telefono: Telefono,
-        Cargo: Cargo,
-        Password: Password,
-        Foto: urlImgDescargar,
-      };
-      if (itemID === "") {
-        console.log("va a registrar");
-        const infoUsuario = await createUserWithEmailAndPassword(
-          auth,
-          Email,
-          Password
-        );
-        const docRef = doc(fireStore, `Personal/${infoUsuario.user.uid}`);
-        setDoc(docRef, { ...newEmpleado });
+      const urlImgDescargar = await cargarFotoBase(data.Foto, "Empleados");
+      data.Foto = urlImgDescargar;
+      console.log("Datos en itemID", idEmpleado, "nada");
+      if (idEmpleado === "") {
+        console.log("Datos para crear usuario: ", idEmpleado);
+        registerUser(data, "Personal");
       } else {
-        console.log("va a modificar");
-        const referenciaCities = doc(collection(fireStore, "Personal"), itemID);
-        await setDoc(referenciaCities, newEmpleado);
+        console.log("Actualizar");
+        actualizarDatos("Personal", data, idEmpleado);
         setItemID("");
       }
-      alert("Completado");
     } catch (error) {
       console.error(error);
       alert("Algo salió mal");
@@ -176,6 +147,7 @@ const AgregarEmpleado = () => {
               maxLength: 30,
             })}
             maxLength={30}
+            disabled={camposActivos}
           />
         </div>
         <div>
@@ -226,31 +198,32 @@ const AgregarEmpleado = () => {
         </div>
         <div>
           <label>Contraseña</label>
-          {errors.Password?.type === "required" && (
+          {errors.Contrasenia?.type === "required" && (
             <p className="error">La contaseña es obligatoria</p>
           )}
-          {errors.Password?.type === "maxLength" && (
+          {errors.Contrasenia?.type === "maxLength" && (
             <p className="error">Solo se permiten 10 caracteres</p>
           )}
-          {errors.Password?.type === "minLength" && (
+          {errors.Contrasenia?.type === "minLength" && (
             <p className="error">
               La contraseña debe tener minimo 6 caracteres
             </p>
           )}
-          {errors.Password?.type === "pattern" && (
+          {errors.Contrasenia?.type === "pattern" && (
             <p className="error">
               La contraseña debe tener almenos un numero y una letra mayuscula
             </p>
           )}
           <input
             type="password"
-            {...register("Password", {
+            {...register("Contrasenia", {
               required: true,
               maxLength: 30,
               minLength: 6,
               pattern: /^(?=.*[0-9])(?=.*[A-Z])/,
             })}
             maxLength={10}
+            disabled={camposActivos}
           />
         </div>
         <div>
