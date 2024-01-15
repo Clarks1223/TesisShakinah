@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../Context/AuthContext";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
@@ -8,32 +7,36 @@ const Password = () => {
   const { user, updatePassword, signOut } = useAuth();
   const {
     register,
-    formState: { errors },
     handleSubmit,
+    formState: { errors },
   } = useForm();
-  const [error, setError] = useState(null);
 
   const onSubmit = async (data) => {
     if (data.nuevaContr === data.confirContra) {
+      console.log("las contraseñas coinciden");
+      console.log("usuario-mail: ", user.mail);
+      console.log("usuario-antig: ", data.antiContrasenia);
+      console.log("usuario-nueva: ", data.nuevaContr);
       try {
         const credential = EmailAuthProvider.credential(
           user.email,
-          data.antiguaContrasenia
+          data.antiContrasenia
         );
         await reauthenticateWithCredential(user, credential);
+        await updatePassword(data.confirContra);
 
-        await updatePassword(data.nuevaContr);
         alert("Contraseña actualizada exitosamente");
-        setError(null);
         await signOut();
       } catch (error) {
-        alert("Error al intentar actualizar la contraseña:", error.message);
-        setError(
-          "Error al validar la contraseña actual. Asegúrate de ingresar la contraseña correcta."
+        // Mostrar el mensaje de error en la interfaz de usuario en lugar de usar alert
+        console.error(
+          "Error al intentar actualizar la contraseña:",
+          error.message
         );
       }
     } else {
-      alert("Revisa los datos ingresados e intenta denuevo");
+      // Mostrar mensaje de error en la interfaz de usuario en lugar de usar alert
+      console.error("Las contraseñas no coinciden");
     }
   };
 
@@ -53,11 +56,10 @@ const Password = () => {
               La contraseña antigua es obligatoria
             </p>
           )}
-
           <input
             type="password"
             placeholder="Contraseña actual"
-            {...register("antiguaContrasenia", {
+            {...register("antiContrasenia", {
               required: true,
               minLength: 6,
             })}
@@ -65,6 +67,7 @@ const Password = () => {
             autoComplete="current-password"
           />
         </div>
+
         <div className="nuevaContrasenia">
           <label>Nueva contraseña</label>
           {errors.nuevaContr?.type === "required" && (

@@ -40,6 +40,7 @@ const ItemCita = (props) => {
     data.Titulo = props.titulo;
     data.Precio = props.precio;
     data.Estado = "Activo";
+    
     agendarCitaBase(data, props.id);
   };
 

@@ -21,7 +21,8 @@ export const MenuDashboard = (props) => {
 
         <section className="Menu-Admin-Perfil">
           <h3>{`${userInformation.Nombre} ${userInformation.Apellido}`}</h3>
-          <h3>{userInformation.Correo}</h3>
+          {/*Verificar que traiga el Email*/}
+          <h3>{userInformation.Email}</h3>
           <h3>{userInformation.Telefono}</h3>
         </section>
 

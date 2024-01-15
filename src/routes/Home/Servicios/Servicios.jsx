@@ -1,5 +1,5 @@
 import { ServiciosComponent } from "../../../components/Home/ServiciosComponent/ServiciosComponent";
-import "./servicios.css";
+import "./Servicios.css";
 import { useAuth } from "../../../Context/AuthContext";
 
 export const Servicios = () => {

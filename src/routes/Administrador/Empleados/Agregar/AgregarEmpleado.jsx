@@ -2,14 +2,18 @@ import "./AgregarEmpleado.css";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../Context/AuthContext";
-const AgregarEmpleado = () => {
+import { useNavigate } from "react-router-dom";
+import CryptoJS from "crypto-js";
+const AgregarEmpleado = ({ pantalla }) => {
+  const navigate = useNavigate();
   const {
     itemID,
     setItemID,
-    cargarFotoBase,
     verItem,
     registerUser,
     actualizarDatos,
+    subirItemBD,
+    sendCustomEmail,
   } = useAuth();
 
   const [dbValores, setDBValores] = useState({
@@ -38,7 +42,6 @@ const AgregarEmpleado = () => {
       if (itemID !== "") {
         try {
           const valores = await verItem("Personal", itemID);
-          valores.Contrasenia = "123456A";
           setIDEmpleado(itemID);
           setDBValores(valores);
           // Actualiza el formulario con los valores obtenidos de la base de datos
@@ -57,17 +60,26 @@ const AgregarEmpleado = () => {
 
   const onSubmit = async (data) => {
     try {
-      const urlImgDescargar = await cargarFotoBase(data.Foto, "Empleados");
-      data.Foto = urlImgDescargar;
-      console.log("Datos en itemID", idEmpleado, "nada");
+      const autoCompleteInfo = {
+        Contrasenia: "STemporal01",
+        Foto: "https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/General%2FIcono-Usuario-Default.png?alt=media&token=5d2e75e3-810f-4229-b636-e68ad269d331",
+      };
+      data.Contrasenia = autoCompleteInfo.Contrasenia;
+      data.Foto = autoCompleteInfo.Foto;
+      const body = `Sus datos de acceso son:\nUsuario: ${data.Email}\nContaseña: ${autoCompleteInfo.Contrasenia}`;
       if (idEmpleado === "") {
-        console.log("Datos para crear usuario: ", idEmpleado);
-        registerUser(data, "Personal");
+        data.contrasenaCambiada = false;
+        console.log("Datos para crear usuario: ", data);
+        console.log("Asi se enviara el correo: ", body);
+        await subirItemBD("Personal", data);
+        sendCustomEmail(body, data.Email);
       } else {
-        console.log("Actualizar");
-        actualizarDatos("Personal", data, idEmpleado);
+        console.log("Actualizar usuario: ", data);
+        //actualizarDatos("Personal", data, idEmpleado);
         setItemID("");
       }
+      pantalla(true);
+      navigate("/Administrador/Personal");
     } catch (error) {
       console.error(error);
       alert("Algo salió mal");
@@ -196,49 +208,7 @@ const AgregarEmpleado = () => {
             maxLength={15}
           />
         </div>
-        <div>
-          <label>Contraseña</label>
-          {errors.Contrasenia?.type === "required" && (
-            <p className="error">La contaseña es obligatoria</p>
-          )}
-          {errors.Contrasenia?.type === "maxLength" && (
-            <p className="error">Solo se permiten 10 caracteres</p>
-          )}
-          {errors.Contrasenia?.type === "minLength" && (
-            <p className="error">
-              La contraseña debe tener minimo 6 caracteres
-            </p>
-          )}
-          {errors.Contrasenia?.type === "pattern" && (
-            <p className="error">
-              La contraseña debe tener almenos un numero y una letra mayuscula
-            </p>
-          )}
-          <input
-            type="password"
-            {...register("Contrasenia", {
-              required: true,
-              maxLength: 30,
-              minLength: 6,
-              pattern: /^(?=.*[0-9])(?=.*[A-Z])/,
-            })}
-            maxLength={10}
-            disabled={camposActivos}
-          />
-        </div>
-        <div>
-          <label>Foto</label>
-          {errors.foto?.type === "required" && (
-            <p className="error">La foto es obligatoria</p>
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            {...register("Foto", {
-              required: true,
-            })}
-          />
-        </div>
+
         <div className="boton-submit">
           <input type="submit" value={"Guardar"} />
         </div>

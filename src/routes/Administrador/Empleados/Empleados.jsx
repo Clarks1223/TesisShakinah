@@ -2,17 +2,19 @@ import React, { useEffect, useState } from "react";
 import ListaEmpleados from "../../../components/ListaEmpleados/ListaEmpleados.jsx";
 import { useAuth } from "../../../Context/AuthContext.jsx";
 import { Link, Outlet } from "react-router-dom";
+import AgregarEmpleado from "./Agregar/AgregarEmpleado.jsx";
 const VerEmpleados = () => {
   const { verItems, eliminar, setItemID, itemID, historialCitas } = useAuth();
 
   const [dsp1, setDsp1] = useState(true);
   const [empleados, setEmpleados] = useState([]);
   const [citas, setCitas] = useState([]);
+  const [elim, setElim] = useState(false);
 
   useEffect(() => {
     verItems("Personal", setEmpleados);
     setItemID("");
-  }, [dsp1]);
+  }, [dsp1, elim]);
 
   useEffect(() => {
     console.log("itemID", citas);
@@ -20,7 +22,7 @@ const VerEmpleados = () => {
   }, []);
 
   const eliminarEmpleado = async (id) => {
-    if (window.confirm("¿Esta seguro de elinminar este item?")) {
+    if (window.confirm("¿Esta seguro de elinminar este empleado?")) {
       try {
         const existenCitas = citas.some((cita) => cita.IDEmpleado === id);
         if (existenCitas) {
@@ -30,7 +32,8 @@ const VerEmpleados = () => {
         } else {
           console.log("se ha eliminado, ya que citas contiene: ", citas);
           //Falta elimnar datos de inicio de sesion de usaurio
-          //eliminar("Personal", id);
+          eliminar("Personal", id);
+          setElim(!elim);
         }
       } catch (error) {
         alert("Ha ocurrido un error", error);
@@ -65,7 +68,7 @@ const VerEmpleados = () => {
           </section>
         </section>
       ) : (
-        <Outlet />
+        <AgregarEmpleado pantalla={setDsp1} />
       )}
     </section>
   );

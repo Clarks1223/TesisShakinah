@@ -22,8 +22,6 @@ export const CitaProvider = ({ children }) => {
   const eliminarCita = async (id) => {
     setCita((prevCita) => prevCita.filter((c) => c.id !== id));
   };
-  //agendar agregar cita a la base
-
   const agendarCitaBase = async (data, idcita) => {
     try {
       await addDoc(collection(fireStore, `Citas`), data);

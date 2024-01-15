@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import "./AgregarServicio.css";
 import { validateCosto } from "../../../../utils/formValidator";
 import { useAuth } from "../../../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-export const ActualizarServicio = () => {
+export const ActualizarServicio = ({ pantalla }) => {
+  const navigate = useNavigate();
   const {
     itemID,
     setItemID,
@@ -20,7 +22,7 @@ export const ActualizarServicio = () => {
     Costo: "",
     Foto: "",
   });
-
+  const [idServicio, setIdServicio] = useState("");
   const {
     register,
     formState: { errors },
@@ -35,6 +37,7 @@ export const ActualizarServicio = () => {
       if (itemID !== "") {
         try {
           const valores = await verItem("Servicios", itemID);
+          setIdServicio(itemID);
           console.log("Item almacenado en dbValores:", valores);
           setDBValores(valores);
 
@@ -62,15 +65,20 @@ export const ActualizarServicio = () => {
         Costo,
         Foto: urlImgDescargar,
       };
-      if (itemID == "") {
+      console.log("El dato en ItemID dentro del onsubmit: ", itemID);
+      if (idServicio === "") {
+        console.log("Entro a agregar nuevo");
         subirItemBD("Servicios", newServicio);
-        //Add navigate para salir del formulario
       } else {
-        actualizarDatos("Servicios", newServicio, itemID);
+        console.log("Entro a actualizar servicio");
+        actualizarDatos("Servicios", newServicio, idServicio);
         setItemID("");
       }
+      navigate("/Administrador/Servicios");
+      pantalla(true);
     } catch (error) {
       alert("Algo salió mal");
+      console.log(error);
     }
   };
 
@@ -126,6 +134,7 @@ export const ActualizarServicio = () => {
             ))}
           </select>
         </div>
+
         <div>
           <label>Costo</label>
           {errors.Costo?.type === "required" && (

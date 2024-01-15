@@ -26,14 +26,15 @@ export const EditarPerfil = () => {
     try {
       // Cargar la foto y obtener la URL de descarga, enviar la foto y la direccion de la carpeta donde se almacenara
       const urlImgDescargar = await cargarFotoBase(data.Foto, "Empleados");
+      console.log("Datos que se van a subir: ", data);
       data.Foto = urlImgDescargar;
+      console.log("Url de imagen: ", data);
       // Actualizar solo el campo de la foto en el documento
       actualizarDatos("UsuariosLogin", data, userId);
-      alert("Su perfil se ha actualizado correctamente");
       navigate("/Usuario");
     } catch (error) {
       console.error(error);
-      alert("Algo salió mal");
+      alert("Algo salió mal,, error en el formulario");
     }
   };
   return (
@@ -94,10 +95,12 @@ export const EditarPerfil = () => {
             maxLength={10}
           />
         </div>
+
         <div>
           <label>Correo</label>
-          <input {...register("Correo", {})} maxLength={30} disabled />
+          <input {...register("Email", {})} maxLength={30} disabled />
         </div>
+
         <div>
           <label>Celular</label>
           {errors.Telefono?.type === "required" && (

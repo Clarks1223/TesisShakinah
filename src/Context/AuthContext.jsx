@@ -23,6 +23,7 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { set } from "react-hook-form";
 
 const auth = getAuth(fireBaseApp);
 
@@ -40,27 +41,35 @@ export const AuthProvider = ({ children }) => {
   const [itemID, setItemID] = useState("");
 
   //Almacenar solo el id del usuario que inicio sesion.
-  const [userId, setUserId] = useState(null);
-
+  const [userId, setUserId] = useState("");
   //Almacenar los nombres y apllidos e ids de empleados para mostrarlos siempre que sea necesario
   const [personal, setPersonal] = useState([]);
 
   //ToDo!! almacenar los datos de la tabla usuariosLogin
-  const [userInformation, setUserInformation] = useState(null);
+  const [userInformation, setUserInformation] = useState({});
 
   useEffect(() => {
     // Observador de cambios de autenticación de Firebase
-    const unsubscribe = auth.onAuthStateChanged((authUser) => {
-      if (authUser) {
-        // cuando el usuario ha iniciado sesion se cargar todo lo de aqui.
-        setUser(authUser);
-        setUserId(authUser.uid);
-        //para almacenar los datos del usuario que ha iniciado sesion
-        getDatosUsuario();
-      } else {
-        // El usuario ha cerrado sesión
-        setUser(null);
+    const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
+      try {
+        if (authUser) {
+          setUser(authUser);
+          console.log("setUsuario: ", user);
+          setUserId(authUser.uid);
+          console.log("Recuperar id: ", userId);
+          await getDatosUsuario(authUser.uid);
+          console.log("Datos usuario: ", userInformation);
+          console.log("El usuario esta autenticado: ", authUser.emailVerified);
+        } else {
+          // El usuario ha cerrado sesión
+          navigate("/login");
+          setUserInformation({});
+        }
+      } catch (error) {
+        console.error("Error al obtener información del usuario:", error);
+        // Manejar el error según tus necesidades
       }
+
       //nombresEmpleados debe estar dento del if para mayor seguridad, esto garantiza que solo se muestren datos
       //cuando este utentificado
       nombresEmpleados();
@@ -70,7 +79,69 @@ export const AuthProvider = ({ children }) => {
     return () => {
       unsubscribe();
     };
-  }, [user, userId]);
+  }, [auth.currentUser]);
+  //Cargar datos del usuario que inicio sesion sin id
+  const getDatosUsuario = async (id) => {
+    try {
+      const refDatosUsuario = doc(collection(fireStore, "UsuariosLogin"), id);
+      const objeto = await getDoc(refDatosUsuario);
+      const datosUsuario = objeto.exists() ? objeto.data() : null;
+      await setUserInformation(datosUsuario);
+      console.log("El rol enviado es", datosUsuario.Rol);
+      handleRedirectBasedOnUserRole(datosUsuario.Rol);
+
+      console.log("Se ha seteado datosUsuario en userInformation");
+    } catch (error) {
+      console.log("fallo al traer datos del usuario: ", error);
+    }
+  };
+
+  // Función para iniciar sesión
+  const signIn = async (email, password) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password).then(
+        (usuarioFirebase) => {
+          setUser(usuarioFirebase);
+        }
+      );
+    } catch (error) {
+      navigate("/Login");
+      if (error.code === "auth/invalid-credential") {
+        alert(
+          "Credenciales inválidas. Verifique su correo electrónico y contraseña."
+        );
+      } else {
+        alert("Algo ha salido mal: " + error.message); // Mostrar el mensaje de error
+      }
+    }
+  };
+  //Funcion para cambiar cerrar sesion y redirigir al usuario
+  const signOutAndRedirect = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      // Redirigir al usuario a la página de login después de cerrar sesión
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error.message);
+      throw error;
+    }
+  };
+  const handleRedirectBasedOnUserRole = async (rol) => {
+    console.log("Rredirigiendo");
+    if (userInformation && rol === "Administrador") {
+      console.log("Rredirigiendo a admin");
+      navigate("/Administrador");
+    } else if (userInformation && rol === "usuario") {
+      console.log("Rredirigiendo a user");
+      navigate("/Usuario");
+    } else {
+      console.log("Rredirigiendo a login");
+      alert("No se ha encontrado su usuario");
+      // Redirige al usuario a la página de inicio de sesión si no tiene permisos o no hay información de usuario
+      navigate("/Login");
+    }
+  };
+
   let contador = 0;
   //Logica de traer los nombres de los empleados una sola vez y reutilizarlos siempre en la aplicacion
   const nombresEmpleados = async () => {
@@ -87,20 +158,6 @@ export const AuthProvider = ({ children }) => {
       (contador = contador + 1)
     );
   };
-  //Cargar datos del usuario que inicio sesion sin id
-  const getDatosUsuario = async () => {
-    try {
-      const refDatosUsuario = doc(
-        collection(fireStore, "UsuariosLogin"),
-        userId
-      );
-      const objeto = await getDoc(refDatosUsuario);
-      const objetoDatosRecuperados = objeto.exists() ? objeto.data() : {};
-      setUserInformation(objetoDatosRecuperados);
-    } catch (error) {
-      console.log("fallo al traer datos del usuario: ", error);
-    }
-  };
 
   //Logica para cargar la foto
   const cargarFotoBase = async (foto, direccion) => {
@@ -109,48 +166,6 @@ export const AuthProvider = ({ children }) => {
     await uploadBytes(refArchivo, archivo);
     const urlImgDescargar = await getDownloadURL(refArchivo);
     return urlImgDescargar;
-  };
-
-  // Función para iniciar sesión
-  const signIn = async (email, password) => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      if (auth.currentUser) {
-        setUser(auth.currentUser);
-        setUserId(auth.currentUser.uid);
-        console.log(
-          "Datos almacenados de usuarioInformacion:",
-          userInformation
-        );
-        userInformation.Rol === "Administrador"
-          ? navigate("/Administrador")
-          : navigate("/Usuario");
-      }
-    } catch (error) {
-      navigate("/Login");
-      if (error.code === "auth/invalid-credential") {
-        alert(
-          "Credenciales inválidas. Verifique su correo electrónico y contraseña."
-        );
-      } else {
-        alert("Algo ha salido mal: " + error.message); // Mostrar el mensaje de error
-      }
-    }
-  };
-
-  //Funcion para cambiar cerrar sesion y redirigir al usuario
-  const signOutAndRedirect = async () => {
-    try {
-      await signOut(auth);
-      // Redirigir al usuario a la página de login después de cerrar sesión
-      navigate("/login");
-      setUser(null);
-      setUserId(null);
-      setUserInformation(null);
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error.message);
-      throw error;
-    }
   };
 
   //Funcion para Actualizar la contraseña
@@ -183,18 +198,14 @@ export const AuthProvider = ({ children }) => {
         data.Contrasenia
       );
       const { Contrasenia, ...dataSinContrasenia } = data;
-      if (tablaReferencia === "UsuariosLogin") {
-        await sendEmailVerification(infoUsuario.user);
-      } else {
-        console.log("Nuevo empleado agregado con exito");
-      }
+      await sendEmailVerification(infoUsuario.user);
       const docRef = doc(
         fireStore,
         `${tablaReferencia}/${infoUsuario.user.uid}`
       );
       setDoc(docRef, dataSinContrasenia);
-      navigate("/Login");
       alert("Cuenta creada exitosamente, Verifica tu cuenta de correo");
+      navigate("/Login");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         alert(
@@ -205,6 +216,24 @@ export const AuthProvider = ({ children }) => {
       }
     }
   };
+
+  //Funcion para enviar el correo
+  async function sendCustomEmail(body, email) {
+    try {
+      const emailContent = {
+        to: email,
+        message: {
+          subject: "Entrega de credenciales de acceso a la app movil",
+          text: body,
+          html: `<p>${body}</p>`,
+        },
+      };
+      const docRef = collection(fireStore, `EmailEnviado`);
+      await addDoc(docRef, emailContent);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   //Funcion para mostrar el historial de citas agendadas en la base x usuario
   //para mostrar por empleado, envie el id del empleado en userId
@@ -229,7 +258,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const referencia = doc(fireStore, tablaReferencia, id);
       await updateDoc(referencia, data);
-      alert("Item Actualizado correctamente");
+      alert("Item actualizado correctamente");
     } catch (error) {
       alert("Ha ocurrido un problema");
     }
@@ -276,6 +305,7 @@ export const AuthProvider = ({ children }) => {
 
   // Objeto de valor para proporcionar al contexto
   const contextValue = {
+    user,
     userId,
     userInformation,
     itemID,
@@ -294,6 +324,7 @@ export const AuthProvider = ({ children }) => {
     actualizarDatos,
     eliminar,
     cargarFotoBase,
+    sendCustomEmail,
   };
 
   return (

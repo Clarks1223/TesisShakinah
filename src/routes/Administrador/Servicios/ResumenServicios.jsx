@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import ListaServicios from "../../../components/ListaServicios/ListaServicios.jsx";
 import "../Empleados/Empleados.css";
 import { Link, Outlet } from "react-router-dom";
+import ActualizarServicio from "./Nuevo/AgregarServicio.jsx";
 import { useAuth } from "../../../Context/AuthContext.jsx";
 
 export const ResumenServicios = (props) => {
   const [dsp1, setDsp1] = useState(true);
   const [items, setItems] = useState([]);
+  const [elim, setElim] = useState(false);
   //funciones para manejar los datos de la base
   const { verItems, eliminar, itemID, setItemID, historialCitas } = useAuth();
   const [citas, setCitas] = useState([]);
@@ -14,11 +16,12 @@ export const ResumenServicios = (props) => {
   useEffect(() => {
     verItems("Servicios", setItems);
     setItemID("");
-  }, [dsp1]);
+  }, [dsp1, elim]);
 
   useEffect(() => {
     historialCitas("Citas", "IDservicio", setCitas, itemID);
     console.log("Se ha ejecutado este codigo: ", (cont = cont + 1));
+    setDsp1(true);
   }, []);
 
   const eliminarServicio = async (id) => {
@@ -31,8 +34,9 @@ export const ResumenServicios = (props) => {
             "Actualmente existen citas agendadas con este servicio, primero elimine las citas"
           );
         } else {
-          console.log("se ha eliminado, ya que citas contiene: ", citas);
-          //eliminar("Servicios", id);
+          console.log("se ha eliminado, ya que citas contiene: ", citas.length);
+          eliminar("Servicios", id);
+          setElim(!elim);
         }
       } catch (error) {
         alert("Ha ocurrido un error", error);
@@ -56,6 +60,7 @@ export const ResumenServicios = (props) => {
           </button>
         </Link>
       </section>
+
       <section className="Persona">
         {dsp1 ? (
           <section className="lista-empelados">
@@ -70,7 +75,7 @@ export const ResumenServicios = (props) => {
             )}
           </section>
         ) : (
-          <Outlet />
+          <ActualizarServicio pantalla={setDsp1} />
         )}
       </section>
     </section>

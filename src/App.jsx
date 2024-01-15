@@ -66,8 +66,10 @@ function App() {
                   </Route>
                   <Route path="Citas" element={<ResumenCitas />} />
                   <Route path="Servicios/" element={<ResumenServicios />}>
+
                     <Route path="Nuevo" element={<AgregarServicio />} />
-                    <Route path="Actualizar" element={<ActualizarServicio />} />
+                    
+
                   </Route>
                   <Route path="Password" element={<Password />} />
                 </Route>
