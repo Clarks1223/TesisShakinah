@@ -50,7 +50,7 @@ export const Registrar = () => {
               type={field === "Contrasenia" ? "password" : "text"}
               placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
               {...register(field, validationRules[field])}
-              maxLength={field === "telefono" ? 10 : 30}
+              maxLength={field === "Telefono" ? 10 : 50}
             />
           </div>
         ))}

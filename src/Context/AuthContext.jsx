@@ -23,7 +23,6 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { set } from "react-hook-form";
 
 const auth = getAuth(fireBaseApp);
 
@@ -55,6 +54,7 @@ export const AuthProvider = ({ children }) => {
         if (authUser) {
           setUser(authUser);
           console.log("setUsuario: ", user);
+          console.log("El usuario esta autenticado: ", user.emailVerified);
           setUserId(authUser.uid);
           console.log("Recuperar id: ", userId);
           await getDatosUsuario(authUser.uid);
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
           console.log("El usuario esta autenticado: ", authUser.emailVerified);
         } else {
           // El usuario ha cerrado sesión
-          navigate("/login");
+
           setUserInformation({});
         }
       } catch (error) {
@@ -89,7 +89,6 @@ export const AuthProvider = ({ children }) => {
       await setUserInformation(datosUsuario);
       console.log("El rol enviado es", datosUsuario.Rol);
       handleRedirectBasedOnUserRole(datosUsuario.Rol);
-
       console.log("Se ha seteado datosUsuario en userInformation");
     } catch (error) {
       console.log("fallo al traer datos del usuario: ", error);
@@ -120,6 +119,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
       setUser(null);
+      navigate("/");
       // Redirigir al usuario a la página de login después de cerrar sesión
     } catch (error) {
       console.error("Error al cerrar sesión:", error.message);
