@@ -1,30 +1,41 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { fireBaseApp } from "../Auth/firebase";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 
 const auth = getAuth(fireBaseApp);
 
 const ProtectedRoute = ({ redirectPath = "/Login" }) => {
-  const [mailVerified, setMailVerified] = useState(auth.currentUser?.emailVerified);
+  const [user, setUser] = useState(null);
+  const [mailVerified, setMailVerified] = useState(false);
 
   useEffect(() => {
-    const checkEmailVerification = async () => {
-      if (auth.currentUser) {
-        const updatedUser = await auth.currentUser.reload();
-        setMailVerified(updatedUser.emailVerified);
-      }
-    };
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
 
-    checkEmailVerification();
+      if (user) {
+        const checkEmailVerification = async () => {
+          const updatedUser = await auth.currentUser.reload();
+          setMailVerified(updatedUser.emailVerified);
+        };
+
+        checkEmailVerification();
+      }
+    });
 
     return () => {
-      // Limpiar efecto al desmontar el componente si es necesario
+      unsubscribe();
     };
-  }, [auth.currentUser]);
+  }, []);
+
+  if (!user) {
+    // No hay usuario autenticado, redirige al login
+    return <Navigate to={redirectPath} replace />;
+  }
 
   if (mailVerified === false) {
+    // El correo no ha sido verificado, alerta y redirige
     alert("Verifique su cuenta de correo");
     return <Navigate to={redirectPath} replace />;
   }
