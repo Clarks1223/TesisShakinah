@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { fireBaseApp } from "../Auth/firebase";
 import { getAuth } from "firebase/auth";
@@ -7,7 +7,11 @@ import { useEffect, useState } from "react";
 const auth = getAuth(fireBaseApp);
 
 const ProtectedRoute = ({ redirectPath = "/Login" }) => {
-  const [mailVerified, setMailVerified] = useState(auth.currentUser?.emailVerified);
+  const { user } = useAuth(); // Obtén el usuario desde el contexto
+  const [mailVerified, setMailVerified] = useState(
+    auth.currentUser?.emailVerified
+  );
+  const navigate = useNavigate(); // Corrige esta línea
 
   useEffect(() => {
     const checkEmailVerification = async () => {
@@ -23,6 +27,10 @@ const ProtectedRoute = ({ redirectPath = "/Login" }) => {
       // Limpiar efecto al desmontar el componente si es necesario
     };
   }, [auth.currentUser]);
+  if (!user) {
+    // Si no hay usuario, redirige al path de inicio de sesión
+    return <Navigate to={redirectPath} replace />;
+  }
 
   if (mailVerified === false) {
     alert("Verifique su cuenta de correo");
