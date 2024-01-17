@@ -162,6 +162,14 @@ export const AuthProvider = ({ children }) => {
   //Logica para cargar la foto
   const cargarFotoBase = async (foto, direccion) => {
     const archivo = foto[0];
+    // Verificar el tamaño de la imagen
+    const maxSizeInBytes = 2 * 1024 * 1024; // Tamaño máximo permitido: 3 MB
+    if (archivo.size > maxSizeInBytes) {
+      console.log("El tamaño de la imagen excede el límite permitido.");
+      // Puedes mostrar un mensaje de error al usuario si es necesario
+      return null;
+    }
+
     const refArchivo = ref(storage, `${direccion}/${archivo.name}`);
     await uploadBytes(refArchivo, archivo);
     const urlImgDescargar = await getDownloadURL(refArchivo);

@@ -19,6 +19,7 @@ const ResumenCita = (props) => {
     if (props.estado === "Cancelado" || props.estado === "Finalizado") {
       if (confirmacion) {
         eliminar("Citas", props.iditem);
+        props.detectarEliminado(!props.itemEliminado);
       }
     }
   };
@@ -47,7 +48,10 @@ const ResumenCita = (props) => {
         ))}
       </section>
       <section className="contenedor-botones">
-        <button onClick={eliminarCitas}>
+        <button
+          onClick={eliminarCitas}
+          disabled={cancelar !== "Activo" && props.usuario === "usuario"}
+        >
           {cancelar === "Activo" ? "Cancelar" : "Eliminar Item"}
         </button>
       </section>

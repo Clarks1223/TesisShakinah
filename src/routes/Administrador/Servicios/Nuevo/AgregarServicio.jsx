@@ -58,6 +58,12 @@ export const ActualizarServicio = ({ pantalla }) => {
       const { Titulo, Empleado, Costo, Foto } = data;
       const [IdEmpleado, nombreApellido] = Empleado.split("|");
       const urlImgDescargar = await cargarFotoBase(Foto, "Servicios");
+      if (urlImgDescargar === null) {
+        alert(
+          "La imagen excede el límite permitido de 2MB. Por favor seleccione otro archivo."
+        );
+        return;
+      }
       const newServicio = {
         Titulo,
         Empleado: nombreApellido,

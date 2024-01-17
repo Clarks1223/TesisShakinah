@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ListaServicios from "../../../components/ListaServicios/ListaServicios.jsx";
 import "../Empleados/Empleados.css";
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ActualizarServicio from "./Nuevo/AgregarServicio.jsx";
 import { useAuth } from "../../../Context/AuthContext.jsx";
 

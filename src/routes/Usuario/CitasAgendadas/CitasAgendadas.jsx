@@ -30,6 +30,7 @@ export const VerCitas = () => {
                 costo={cita.Precio}
                 estado={cita.Estado}
                 iditem={cita.id}
+                usuario="usuario"
               />
             ))}
           </section>

@@ -5,22 +5,18 @@ import { useState, useEffect } from "react";
 import ResumenCitaItem from "../../../components/ResumenCitaItem/ResumenCita";
 
 const ResumenCitas = () => {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({});
-
-  const [empleado, setEmpleado] = useState();
-  const nombre = "Paula";
-  const numero = "26";
+  const { register } = useForm({});
   const { personal, historialCitas } = useAuth();
 
+  const [empleado, setEmpleado] = useState();
+  const [itemEliminado, setitemEliminado] = useState(false);
+  const [top, setTop] = useState(true);
+
   const [citas, setCitas] = useState([]);
+
   useEffect(() => {
     historialCitas("Citas", "IDEmpleado", setCitas, empleado);
-    console.log("datos de empleado al inicio");
-  }, [empleado]);
+  }, [empleado, itemEliminado]);
 
   return (
     <section className="resumen-citas">
@@ -29,10 +25,17 @@ const ResumenCitas = () => {
       </section>
       <section className="top-citas">
         <h2>Top citas</h2>
-        <h3>
-          El empleado con mayor numero de citas este mes es {`${nombre}`} con
-          {` ${numero}`} citas hasta hoy
-        </h3>
+        {top == true ? (
+          <h3>
+            Se han registrado un total de {citas.length} citas entre todos los
+            empleados hasta el dia de hoy
+          </h3>
+        ) : (
+          <h3>
+            Este empleado registra un total de {citas.length} citas hasta el dia
+            de hoy
+          </h3>
+        )}
       </section>
 
       <div className="buscador-empleado">
@@ -42,6 +45,9 @@ const ResumenCitas = () => {
           value={empleado}
           onChange={(e) => setEmpleado(e.target.value)}
           defaultValue="" // Establecer el valor predeterminado como vacío
+          onChangeCapture={() => {
+            setTop(false);
+          }}
         >
           <option value="" disabled hidden>
             Seleccionar empleado
@@ -68,6 +74,9 @@ const ResumenCitas = () => {
                 costo={cita.Precio}
                 estado={cita.Estado}
                 iditem={cita.id}
+                itemEliminado={itemEliminado}
+                detectarEliminado={setitemEliminado}
+                usuario="Administrador"
               />
             ))}
           </section>
