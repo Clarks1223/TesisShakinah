@@ -53,13 +53,14 @@ export const AuthProvider = ({ children }) => {
       try {
         if (authUser) {
           setUser(authUser);
-          console.log("setUsuario: ", user);
+          console.log("setUsuario desde auth: ", user);
           console.log("El usuario esta autenticado: ", user.emailVerified);
           setUserId(authUser.uid);
           console.log("Recuperar id: ", userId);
           await getDatosUsuario(authUser.uid);
           console.log("Datos usuario: ", userInformation);
           console.log("El usuario esta autenticado: ", authUser.emailVerified);
+          console.log("La informacion del usuario es")
         } else {
           // El usuario ha cerrado sesión
 

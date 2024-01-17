@@ -7,11 +7,11 @@ import { useEffect, useState } from "react";
 const auth = getAuth(fireBaseApp);
 
 const ProtectedRoute = ({ redirectPath = "/Login" }) => {
-  const { user } = useAuth(); // Obtén el usuario desde el contexto
+  const { user, userInformation } = useAuth(); // Obtén el usuario desde el contexto
   const [mailVerified, setMailVerified] = useState(
     auth.currentUser?.emailVerified
   );
-  const navigate = useNavigate(); // Corrige esta línea
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkEmailVerification = async () => {
