@@ -12,7 +12,8 @@ import Registrar from "./routes/Registrar/Registrar";
 import Login from "./routes/Login/Login";
 import PasswordRecovery from "./routes/RecuperarContrasenia/Password-Recovery";
 //Proteger Rutas
-import ProtectedRoute from "./utils/ProtectedRoute";
+import ProtectedUser from "./utils/ProtectedUser";
+import ProtectedAdmin from "./utils/ProtectedAdmin";
 //Rutas Privadas Administrador
 import Administrador from "./routes/Administrador/Dashboard/Administrador";
 import VerEmpleados from "./routes/Administrador/Empleados/Empleados";
@@ -57,7 +58,7 @@ function App() {
                 element={<PasswordRecovery />}
               />
 
-              <Route element={<ProtectedRoute />}>
+              <Route element={<ProtectedAdmin verRol={"Administrador"} />}>
                 <Route path="/Administrador/" element={<Administrador />}>
                   <Route path="Personal/" element={<VerEmpleados />}>
                     <Route path="Nuevo" element={<AgregarEmpleado />} />
@@ -70,15 +71,16 @@ function App() {
                 </Route>
               </Route>
 
-              <Route element={<ProtectedRoute />}>
+              <Route element={<ProtectedUser verRol={"usuario"} />}>
                 <Route path="/Usuario/" element={<Usuario />}>
                   <Route path="Agendar" element={<ListarCitas />} />
                   <Route path="VerCitas" element={<VerCitas />} />
                   <Route path="Perfil" element={<EditarPerfil />} />
                   <Route path="Password" element={<Password />} />
                 </Route>
-                <Route path="*" element={<ErrorRoute />} />
               </Route>
+
+              <Route path="*" element={<ErrorRoute />} />
             </Routes>
           </CitaProvider>
         </AuthProvider>

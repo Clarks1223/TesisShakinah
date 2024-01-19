@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import CryptoJS from "crypto-js";
 const AgregarEmpleado = ({ pantalla }) => {
   const navigate = useNavigate();
   const {
@@ -63,9 +62,11 @@ const AgregarEmpleado = ({ pantalla }) => {
       const autoCompleteInfo = {
         Contrasenia: "STemporal01",
         Foto: "https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/General%2FIcono-Usuario-Default.png?alt=media&token=5d2e75e3-810f-4229-b636-e68ad269d331",
+        dias_no_laborables: [6],
       };
       data.Contrasenia = autoCompleteInfo.Contrasenia;
       data.Foto = autoCompleteInfo.Foto;
+      data.dias_no_laborables = autoCompleteInfo.dias_no_laborables;
       const body = `Sus datos de acceso son:\nUsuario: ${data.Email}\nContaseña: ${autoCompleteInfo.Contrasenia}`;
       if (idEmpleado === "") {
         data.contrasenaCambiada = false;
@@ -75,7 +76,7 @@ const AgregarEmpleado = ({ pantalla }) => {
         sendCustomEmail(body, data.Email);
       } else {
         console.log("Actualizar usuario: ", data);
-        //actualizarDatos("Personal", data, idEmpleado);
+        await actualizarDatos("Personal", data, idEmpleado);
         setItemID("");
       }
       pantalla(true);

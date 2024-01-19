@@ -6,17 +6,37 @@ import ResumenCitaItem from "../../../components/ResumenCitaItem/ResumenCita";
 
 const ResumenCitas = () => {
   const { register } = useForm({});
-  const { personal, historialCitas } = useAuth();
+  const { personal, historialCitas, eliminar, actualizarDatos } = useAuth();
 
   const [empleado, setEmpleado] = useState();
-  const [itemEliminado, setitemEliminado] = useState(false);
+  const [citas, setCitas] = useState([]);
   const [top, setTop] = useState(true);
 
-  const [citas, setCitas] = useState([]);
+  const eliminarCitas = async (estado, iditem, setEstadoLocal) => {
+    const confirmacion = window.confirm(
+      `¿Está seguro de ${
+        estado === "Activo" ? "cancelar" : "eliminar"
+      } esta cita? No podrá revertir esta acción.`
+    );
+    console.log("los datos que llegan: ", estado, " y ", iditem);
+    console.log("el estado de confirmacion: ", confirmacion);
+    if (confirmacion) {
+      if (estado === "Activo") {
+        console.log("voy a actualizar");
+        setEstadoLocal("Cancelado");
+        await actualizarDatos("Citas", { Estado: "Cancelado" }, iditem);
+      } else if (estado === "Cancelado") {
+        console.log("Voy a eliminar");
+        const nuevasCitas = citas.filter((cita) => cita.id !== iditem);
+        await eliminar("Citas", iditem);
+        setCitas(nuevasCitas);
+      }
+    }
+  };
 
   useEffect(() => {
     historialCitas("Citas", "IDEmpleado", setCitas, empleado);
-  }, [empleado, itemEliminado]);
+  }, [empleado]);
 
   return (
     <section className="resumen-citas">
@@ -28,13 +48,10 @@ const ResumenCitas = () => {
         {top == true ? (
           <h3>
             Se han registrado un total de {citas.length} citas entre todos los
-            empleados hasta el dia de hoy
+            empleados hasta el dia de hoy.
           </h3>
         ) : (
-          <h3>
-            Este empleado registra un total de {citas.length} citas hasta el dia
-            de hoy
-          </h3>
+          <h3>Este empleado registra un total de {citas.length} citas.</h3>
         )}
       </section>
 
@@ -74,8 +91,7 @@ const ResumenCitas = () => {
                 costo={cita.Precio}
                 estado={cita.Estado}
                 iditem={cita.id}
-                itemEliminado={itemEliminado}
-                detectarEliminado={setitemEliminado}
+                onDelete={eliminarCitas}
                 usuario="Administrador"
               />
             ))}

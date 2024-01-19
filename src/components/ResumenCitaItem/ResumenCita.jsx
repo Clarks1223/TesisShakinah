@@ -3,30 +3,7 @@ import "./ResumenCita.css";
 import { useAuth } from "../../Context/AuthContext";
 
 const ResumenCita = (props) => {
-  const { eliminar, actualizarDatos } = useAuth();
-  const [cancelar, setCancelar] = useState(props.estado);
-
-  const eliminarCitas = async () => {
-    const confirmacion = window.confirm(
-      "¿Está seguro de eliminar esta cita? No podrá revertir esta acción."
-    );
-    if (cancelar === "Activo") {
-      if (confirmacion) {
-        setCancelar("Cancelado");
-        actualizarDatos("Citas", { Estado: "Cancelado" }, props.iditem);
-      }
-    }
-    if (props.estado === "Cancelado" || props.estado === "Finalizado") {
-      if (confirmacion) {
-        eliminar("Citas", props.iditem);
-        props.detectarEliminado(!props.itemEliminado);
-      }
-    }
-  };
-
-  useEffect(() => {
-    setCancelar(props.estado);
-  }, [props.estado]);
+  const [estadolocal, setEstadoLocal] = useState(props.estado);
 
   return (
     <section className="contenedor-citas">
@@ -39,7 +16,7 @@ const ResumenCita = (props) => {
           Hora: props.hora,
           "Atendido por": props.personal,
           Costo: `$${props.costo}`,
-          Estado: cancelar,
+          Estado: estadolocal,
         }).map(([key, value]) => (
           <div className="item" key={key}>
             <p>{key}:</p>
@@ -49,10 +26,12 @@ const ResumenCita = (props) => {
       </section>
       <section className="contenedor-botones">
         <button
-          onClick={eliminarCitas}
-          disabled={cancelar !== "Activo" && props.usuario === "usuario"}
+          onClick={async () => {
+            await props.onDelete(estadolocal, props.iditem, setEstadoLocal);
+          }}
+          disabled={estadolocal !== "Activo" && props.usuario === "usuario"}
         >
-          {cancelar === "Activo" ? "Cancelar" : "Eliminar Item"}
+          {estadolocal === "Activo" ? "Cancelar" : "Eliminar Item"}
         </button>
       </section>
     </section>

@@ -19,7 +19,7 @@ const validationRules = {
   },
   Email: {
     required: "Debe ingresar correo electrónico",
-    maxLength: { value: 30, message: "Solo se permiten 30 caracteres" },
+    maxLength: { value: 40, message: "Solo se permiten 40 caracteres" },
     pattern: {
       value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
       message: "El formato es incorrecto",

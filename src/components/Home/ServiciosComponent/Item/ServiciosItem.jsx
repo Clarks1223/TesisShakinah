@@ -2,15 +2,18 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCita } from "../../../../Context/CitaContext";
 import "./ServiciosItem.css";
-import { useAuth } from "../../../../Context/AuthContext";
+import { fireBaseApp } from "../../../../Auth/firebase";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth(fireBaseApp);
 
 export const ServiciosItem = (props) => {
   const { agregarCita, cita } = useCita();
-  const { user } = useAuth(); // Obtén la información de autenticación
+
   const navigate = useNavigate();
 
   const handleAgregarCita = () => {
-    if (!user) {
+    if (!auth.currentUser) {
       // Si el usuario no ha iniciado sesión, puedes mostrar un mensaje o redirigir a la página de inicio de sesión
       alert("Debes iniciar sesión para agendar una cita.");
       // Puedes redirigir al usuario a la página de inicio de sesión si lo prefieres

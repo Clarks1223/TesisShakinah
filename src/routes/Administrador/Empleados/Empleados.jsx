@@ -3,6 +3,8 @@ import ListaEmpleados from "../../../components/ListaEmpleados/ListaEmpleados.js
 import { useAuth } from "../../../Context/AuthContext.jsx";
 import { Link, Outlet } from "react-router-dom";
 import AgregarEmpleado from "./Agregar/AgregarEmpleado.jsx";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { fireStore } from "../../../Auth/firebase.js";
 const VerEmpleados = () => {
   const { verItems, eliminar, setItemID, itemID, historialCitas } = useAuth();
 
@@ -21,18 +23,34 @@ const VerEmpleados = () => {
     historialCitas("Citas", "IDEmpleado", setCitas, itemID);
   }, []);
 
+  const verificar = async (id, tabla) => {
+    try {
+      const collectionRef = collection(fireStore, tabla);
+      const q = query(collectionRef, where("IDEmpleado", "==", id));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.size > 0;
+    } catch (error) {
+      console.error("Error al verificar citas:", error);
+      return true;
+    }
+  };
+
   const eliminarEmpleado = async (id) => {
-    if (window.confirm("¿Esta seguro de elinminar este empleado?")) {
+    if (window.confirm("¿Esta seguro de eliminar este empleado?")) {
       try {
-        const existenCitas = citas.some((cita) => cita.IDEmpleado === id);
-        if (existenCitas) {
+        const conflictoCita = await verificar(id, "Citas");
+        const conflictoServicio = await verificar(id, "Servicios");
+        if (conflictoCita) {
           alert(
-            "Actualmente existen citas agendadas para este usuario, primero elimine las citas"
+            "Actualmente hay citas agendadas para este usuario. Elimine primero dichas citas."
+          );
+        } else if (conflictoServicio) {
+          alert(
+            "Actualmente hay servicios vinculados a este empleado. Elimine primero dichos servicios."
           );
         } else {
-          console.log("se ha eliminado, ya que citas contiene: ", citas);
-          //Falta elimnar datos de inicio de sesion de usaurio
-          eliminar("Personal", id);
+          await eliminar("Personal", id);
+          console.log("Se ha eliminado el empleado correctamente");
           setElim(!elim);
         }
       } catch (error) {

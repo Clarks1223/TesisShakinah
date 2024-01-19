@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { fireBaseApp, fireStore, storage } from "../Auth/firebase";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate(); // Usar useNavigate para redirigir
 
   // Estado para almacenar la información del usuario
-  const [user, setUser] = useState(null);
+  
 
   //almacenar la id del item a actualizar
   const [itemID, setItemID] = useState("");
@@ -52,25 +52,14 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
       try {
         if (authUser) {
-          setUser(authUser);
-          console.log("setUsuario desde auth: ", user);
-          console.log("El usuario esta autenticado: ", user.emailVerified);
-          setUserId(authUser.uid);
-          console.log("Recuperar id: ", userId);
-          await getDatosUsuario(authUser.uid);
-          console.log("Datos usuario: ", userInformation);
-          console.log("El usuario esta autenticado: ", authUser.emailVerified);
-          console.log("La informacion del usuario es")
+
         } else {
           // El usuario ha cerrado sesión
-
-          setUserInformation({});
         }
       } catch (error) {
         console.error("Error al obtener información del usuario:", error);
         // Manejar el error según tus necesidades
       }
-
       //nombresEmpleados debe estar dento del if para mayor seguridad, esto garantiza que solo se muestren datos
       //cuando este utentificado
       nombresEmpleados();
@@ -89,7 +78,7 @@ export const AuthProvider = ({ children }) => {
       const datosUsuario = objeto.exists() ? objeto.data() : null;
       await setUserInformation(datosUsuario);
       console.log("El rol enviado es", datosUsuario.Rol);
-      handleRedirectBasedOnUserRole(datosUsuario.Rol);
+      redirect(datosUsuario.Rol);
       console.log("Se ha seteado datosUsuario en userInformation");
     } catch (error) {
       console.log("fallo al traer datos del usuario: ", error);
@@ -101,7 +90,15 @@ export const AuthProvider = ({ children }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password).then(
         (usuarioFirebase) => {
-          setUser(usuarioFirebase);
+
+          console.log("++++Datos dentro de singIn", usuarioFirebase);
+          //setUser(usuarioFirebase);
+          //console.log("+++Datos dentro de user", user);
+
+          console.log("++++Usuario ID: ", usuarioFirebase.user.uid);
+          setUserId(usuarioFirebase.user.uid);
+
+          getDatosUsuario(usuarioFirebase.user.uid);
         }
       );
     } catch (error) {
@@ -119,15 +116,13 @@ export const AuthProvider = ({ children }) => {
   const signOutAndRedirect = async () => {
     try {
       await signOut(auth);
-      setUser(null);
       navigate("/");
-      // Redirigir al usuario a la página de login después de cerrar sesión
     } catch (error) {
       console.error("Error al cerrar sesión:", error.message);
       throw error;
     }
   };
-  const handleRedirectBasedOnUserRole = async (rol) => {
+  const redirect = async (rol) => {
     console.log("Rredirigiendo");
     if (userInformation && rol === "Administrador") {
       console.log("Rredirigiendo a admin");
@@ -164,13 +159,12 @@ export const AuthProvider = ({ children }) => {
   const cargarFotoBase = async (foto, direccion) => {
     const archivo = foto[0];
     // Verificar el tamaño de la imagen
-    const maxSizeInBytes = 2 * 1024 * 1024; // Tamaño máximo permitido: 3 MB
+    const maxSizeInBytes = 2 * 1024 * 1024; // Tamaño máximo permitido: 2 MB
     if (archivo.size > maxSizeInBytes) {
       console.log("El tamaño de la imagen excede el límite permitido.");
       // Puedes mostrar un mensaje de error al usuario si es necesario
       return null;
     }
-
     const refArchivo = ref(storage, `${direccion}/${archivo.name}`);
     await uploadBytes(refArchivo, archivo);
     const urlImgDescargar = await getDownloadURL(refArchivo);
@@ -267,6 +261,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const referencia = doc(fireStore, tablaReferencia, id);
       await updateDoc(referencia, data);
+      if (tablaReferencia === "Personal") {
+        nombresEmpleados();
+      }
+      if (tablaReferencia === "UsuariosLogin") {
+        const refDatosUsuario = doc(collection(fireStore, "UsuariosLogin"), id);
+        const objeto = await getDoc(refDatosUsuario);
+        const datosUsuario = objeto.exists() ? objeto.data() : null;
+        setUserInformation(datosUsuario);
+      }
       alert("Item actualizado correctamente");
     } catch (error) {
       alert("Ha ocurrido un problema");
@@ -276,6 +279,9 @@ export const AuthProvider = ({ children }) => {
   const eliminar = async (tabla, id) => {
     try {
       await deleteDoc(doc(fireStore, tabla, id));
+      if (tabla === "Personal") {
+        nombresEmpleados();
+      }
       alert("Se ha eliminado el item correctamente");
     } catch (error) {
       alert("A ocurrido un problema");
@@ -308,13 +314,18 @@ export const AuthProvider = ({ children }) => {
   const subirItemBD = async (tablaReferencia, data) => {
     try {
       await addDoc(collection(fireStore, tablaReferencia), data);
+      if (tablaReferencia === "Personal") {
+        nombresEmpleados();
+      }
       alert("Nuevo item agregado");
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Objeto de valor para proporcionar al contexto
   const contextValue = {
-    user,
+    
     userId,
     userInformation,
     itemID,

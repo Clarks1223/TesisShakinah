@@ -10,7 +10,7 @@ const ListaEmpleados = ({ empleados, onDelete, pantalla }) => {
       {empleados.map((empleado) => (
         <section className="Persona" key={empleado.id}>
           <section className="descripcion">
-            <p>{empleado.Nombre ? empleado.Nombre : empleado.Titulo}</p>
+            <p>{empleado.Nombre ? `${empleado.Nombre} ${empleado.Apellido}` : empleado.Titulo}</p>
           </section>
           <section className="imagen">
             <img src={empleado.Foto} alt="Empleado" />

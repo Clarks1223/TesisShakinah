@@ -4,11 +4,25 @@ import "./CitasAgendadas.css";
 import { useAuth } from "../../../Context/AuthContext";
 export const VerCitas = () => {
   const [citas, setCitas] = useState([]);
-  const { historialCitas, userId } = useAuth();
-
+  const { historialCitas, userId, actualizarDatos } = useAuth();
   useEffect(() => {
     historialCitas("Citas", "IDUsuario", setCitas, userId);
-  }, [citas]);
+  }, []);
+
+  const eliminarCitas = async (estado, iditem, setEstadoLocal) => {
+    const confirmacion = window.confirm(
+      "¿Está seguro de cancelar esta cita? No podrá revertir esta acción."
+    );
+    console.log("los datos que llegan: ", estado, " y ", iditem);
+    console.log("el estado de confirmacion: ", confirmacion);
+    if (confirmacion) {
+      if (estado === "Activo") {
+        console.log("voy a actualizar");
+        setEstadoLocal("Cancelado");
+        await actualizarDatos("Citas", { Estado: "Cancelado" }, iditem);
+      }
+    }
+  };
 
   return (
     <>
@@ -30,6 +44,7 @@ export const VerCitas = () => {
                 costo={cita.Precio}
                 estado={cita.Estado}
                 iditem={cita.id}
+                onDelete={eliminarCitas}
                 usuario="usuario"
               />
             ))}
