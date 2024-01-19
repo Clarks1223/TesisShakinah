@@ -11,12 +11,10 @@ const ProtectedUser = ({ verRol, redirectPath = "/Login" }) => {
   if (!auth.currentUser) {
     alert("Debe iniciar sesion");
     return <Navigate to={redirectPath} replace />;
-  }
-  if (auth.currentUser.emailVerified === false) {
+  } else if (auth.currentUser.emailVerified === false) {
     alert("Verifique su cuenta de correo");
     return <Navigate to={redirectPath} replace />;
-  }
-  if (verRol !== userInformation.Rol) {
+  } else if (verRol !== userInformation.Rol) {
     console.log("el tipo de usuario que ha llegado: ", userInformation.Rol);
     alert("No tiene acceso a esta ruta");
     return <Navigate to={redirectPath} replace />;
