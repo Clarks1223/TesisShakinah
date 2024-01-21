@@ -15,7 +15,7 @@ const ResumenCitas = () => {
   const eliminarCitas = async (estado, iditem, setEstadoLocal) => {
     const confirmacion = window.confirm(
       `¿Está seguro de ${
-        estado === "Activo" ? "cancelar" : "eliminar"
+        estado === "Activo" ? "finalizar" : "eliminar"
       } esta cita? No podrá revertir esta acción.`
     );
     console.log("los datos que llegan: ", estado, " y ", iditem);
@@ -23,9 +23,9 @@ const ResumenCitas = () => {
     if (confirmacion) {
       if (estado === "Activo") {
         console.log("voy a actualizar");
-        setEstadoLocal("Cancelado");
-        await actualizarDatos("Citas", { Estado: "Cancelado" }, iditem);
-      } else if (estado === "Cancelado") {
+        setEstadoLocal("Finalizado");
+        await actualizarDatos("Citas", { Estado: "Finalizado" }, iditem);
+      } else if (estado === "Finalizado") {
         console.log("Voy a eliminar");
         const nuevasCitas = citas.filter((cita) => cita.id !== iditem);
         await eliminar("Citas", iditem);

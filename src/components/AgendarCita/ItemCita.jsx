@@ -140,8 +140,7 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
       </div>
 
       <div className="agendar-cita-detalle">
-        <h2>{titulo}</h2>
-        <h2>{`${precio}$`}</h2>
+        <h3>{`${titulo} ${precio}$`}</h3>
       </div>
 
       <form className="agendar-cita-datos" onSubmit={handleSubmit(onSubmit)}>

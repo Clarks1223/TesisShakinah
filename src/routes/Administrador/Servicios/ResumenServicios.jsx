@@ -5,37 +5,42 @@ import { Link } from "react-router-dom";
 import ActualizarServicio from "./Nuevo/AgregarServicio.jsx";
 import { useAuth } from "../../../Context/AuthContext.jsx";
 
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { fireStore } from "../../../Auth/firebase.js";
+
 export const ResumenServicios = (props) => {
   const [dsp1, setDsp1] = useState(true);
   const [items, setItems] = useState([]);
   const [elim, setElim] = useState(false);
-  //funciones para manejar los datos de la base
-  const { verItems, eliminar, itemID, setItemID, historialCitas } = useAuth();
-  const [citas, setCitas] = useState([]);
-  let cont = 0;
+  const { verItems, eliminar, setItemID } = useAuth();
+
   useEffect(() => {
     verItems("Servicios", setItems);
     setItemID("");
   }, [dsp1, elim]);
 
-  useEffect(() => {
-    historialCitas("Citas", "IDservicio", setCitas, itemID);
-    console.log("Se ha ejecutado este codigo: ", (cont = cont + 1));
-    setDsp1(true);
-  }, []);
-
+  const verificar = async (id, tabla) => {
+    try {
+      const collectionRef = collection(fireStore, tabla);
+      const q = query(collectionRef, where("IDservicio", "==", id));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.size > 0;
+    } catch (error) {
+      console.error("Error al verificar citas:", error);
+      return true;
+    }
+  };
   const eliminarServicio = async (id) => {
-    if (window.confirm("¿Esta seguro de elinminar este item?")) {
+    if (window.confirm("¿Esta seguro de eliminar este servicio?")) {
       try {
-        //const existenCitas = citas.length > 0;
-        const existenCitas = citas.some((cita) => cita.IDservicio === id);
-        if (existenCitas) {
+        const conflictoCita = await verificar(id, "Citas");
+        if (conflictoCita) {
           alert(
-            "Actualmente existen citas agendadas con este servicio, primero elimine las citas"
+            "Actualmente hay citas agendadas para este servicio. Elimine primero dichas citas."
           );
         } else {
-          console.log("se ha eliminado, ya que citas contiene: ", citas.length);
-          eliminar("Servicios", id);
+          await eliminar("Servicios", id);
+          console.log("Se ha eliminado el servicio");
           setElim(!elim);
         }
       } catch (error) {

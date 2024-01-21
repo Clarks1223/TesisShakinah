@@ -3,8 +3,13 @@ import { useAuth } from "../../Context/AuthContext";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import "./Password.css";
 
+import { fireBaseApp } from "../../Auth/firebase";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth(fireBaseApp);
+
 const Password = () => {
-  const { user, updatePassword, signOut } = useAuth();
+  const { updatePassword, signOut, userInformation } = useAuth();
   const {
     register,
     handleSubmit,
@@ -13,30 +18,25 @@ const Password = () => {
 
   const onSubmit = async (data) => {
     if (data.nuevaContr === data.confirContra) {
-      console.log("las contraseñas coinciden");
-      console.log("usuario-mail: ", user.mail);
-      console.log("usuario-antig: ", data.antiContrasenia);
-      console.log("usuario-nueva: ", data.nuevaContr);
       try {
         const credential = EmailAuthProvider.credential(
-          user.email,
+          userInformation.Email,
           data.antiContrasenia
         );
-        await reauthenticateWithCredential(user, credential);
+        await reauthenticateWithCredential(auth.currentUser, credential);
         await updatePassword(data.confirContra);
 
         alert("Contraseña actualizada exitosamente");
-        await signOut();
+        console.log("Su contraseña se a actualizado");
+        await signOut(auth);
       } catch (error) {
-        // Mostrar el mensaje de error en la interfaz de usuario en lugar de usar alert
         console.error(
           "Error al intentar actualizar la contraseña:",
           error.message
         );
       }
     } else {
-      // Mostrar mensaje de error en la interfaz de usuario en lugar de usar alert
-      console.error("Las contraseñas no coinciden");
+      alert("Las contraseñas no coinciden");
     }
   };
 

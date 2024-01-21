@@ -38,9 +38,7 @@ export const ActualizarServicio = ({ pantalla }) => {
         try {
           const valores = await verItem("Servicios", itemID);
           setIdServicio(itemID);
-          console.log("Item almacenado en dbValores:", valores);
           setDBValores(valores);
-
           // Actualiza el formulario con los valores obtenidos de la base de datos
           Object.keys(valores).forEach((key) => {
             setValue(key, valores[key]);
@@ -71,12 +69,9 @@ export const ActualizarServicio = ({ pantalla }) => {
         Costo,
         Foto: urlImgDescargar,
       };
-      console.log("El dato en ItemID dentro del onsubmit: ", itemID);
       if (idServicio === "") {
-        console.log("Entro a agregar nuevo");
         subirItemBD("Servicios", newServicio);
       } else {
-        console.log("Entro a actualizar servicio");
         actualizarDatos("Servicios", newServicio, idServicio);
         setItemID("");
       }

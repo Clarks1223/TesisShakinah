@@ -6,7 +6,9 @@
 
 .servicios-empleado {
   display: flex;
+  text-align: center; /* Añadido para centrar horizontalmente */
   align-items: center;
+  justify-content: center;
   gap: 20px;
 }
 
@@ -30,8 +32,5 @@
 
 .servicios-descripcion {
   text-align: center; /* Añadido para centrar horizontalmente */
-}
-
-.servicios-descripcion-nombre {
-  text-align: center; /* Añadido para centrar horizontalmente */
+  
 }

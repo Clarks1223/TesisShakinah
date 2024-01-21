@@ -2,10 +2,16 @@ import { Link } from "react-router-dom";
 import "./MenuDashboard.css";
 import { useAuth } from "../../Context/AuthContext";
 
+import { fireBaseApp } from "../../Auth/firebase";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth(fireBaseApp);
+
+
 export const MenuDashboard = (props) => {
   const { signOut, userInformation } = useAuth();
   const cerrarSesion = () => {
-    signOut();
+    signOut(auth);
   };
 
   return (

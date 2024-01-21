@@ -10,8 +10,8 @@
   }
   
   .ServiciosOfertados-section-imagen {
-    height: 200px;
-    width: 200px;
+    height: 125px;
+    width: 150px;
     overflow: hidden; /* Evita que la imagen sobresalga del contenedor */
     border-radius: 8px; /* Añadido borde redondeado */
   }

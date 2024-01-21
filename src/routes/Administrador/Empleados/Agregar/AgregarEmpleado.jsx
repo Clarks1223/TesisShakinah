@@ -63,19 +63,19 @@ const AgregarEmpleado = ({ pantalla }) => {
         Contrasenia: "STemporal01",
         Foto: "https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/General%2FIcono-Usuario-Default.png?alt=media&token=5d2e75e3-810f-4229-b636-e68ad269d331",
         dias_no_laborables: [6],
+        enlace:
+          "https://drive.google.com/file/d/1LpOtXyiiUO4MLl8eb4PPAZ6YnJQMJhMX/view?usp=sharing",
       };
-      data.Contrasenia = autoCompleteInfo.Contrasenia;
-      data.Foto = autoCompleteInfo.Foto;
-      data.dias_no_laborables = autoCompleteInfo.dias_no_laborables;
-      const body = `Sus datos de acceso son:\nUsuario: ${data.Email}\nContaseña: ${autoCompleteInfo.Contrasenia}`;
       if (idEmpleado === "") {
-        data.contrasenaCambiada = false;
-        console.log("Datos para crear usuario: ", data);
-        console.log("Asi se enviara el correo: ", body);
-        await subirItemBD("Personal", data);
+        const datanuevo = { ...data };
+        datanuevo.Contrasenia = autoCompleteInfo.Contrasenia;
+        datanuevo.Foto = autoCompleteInfo.Foto;
+        datanuevo.dias_no_laborables = autoCompleteInfo.dias_no_laborables;
+        const body = `Sus datos de acceso son:\nUsuario: ${data.Email}\n, Contaseña: ${autoCompleteInfo.Contrasenia}\n, Enlce de descarga de la app movil: ${autoCompleteInfo.enlace}`;
+        datanuevo.contrasenaCambiada = false;
+        await subirItemBD("Personal", datanuevo);
         sendCustomEmail(body, data.Email);
       } else {
-        console.log("Actualizar usuario: ", data);
         await actualizarDatos("Personal", data, idEmpleado);
         setItemID("");
       }

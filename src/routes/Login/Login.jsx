@@ -2,6 +2,10 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import "./Login.css";
+import { fireBaseApp } from "../../Auth/firebase";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth(fireBaseApp);
 
 export const Login = () => {
   
@@ -16,7 +20,7 @@ export const Login = () => {
 
 
   const onSubmit = (data) => {
-    signIn(data.email, data.contrasenia);
+    signIn(data.email, data.contrasenia, auth);
   };
 
   return (

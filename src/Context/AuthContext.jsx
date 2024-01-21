@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate(); // Usar useNavigate para redirigir
 
   // Estado para almacenar la información del usuario
-  
 
   //almacenar la id del item a actualizar
   const [itemID, setItemID] = useState("");
@@ -52,7 +51,6 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
       try {
         if (authUser) {
-
         } else {
           // El usuario ha cerrado sesión
         }
@@ -77,27 +75,18 @@ export const AuthProvider = ({ children }) => {
       const objeto = await getDoc(refDatosUsuario);
       const datosUsuario = objeto.exists() ? objeto.data() : null;
       await setUserInformation(datosUsuario);
-      console.log("El rol enviado es", datosUsuario.Rol);
       redirect(datosUsuario.Rol);
-      console.log("Se ha seteado datosUsuario en userInformation");
     } catch (error) {
       console.log("fallo al traer datos del usuario: ", error);
     }
   };
 
   // Función para iniciar sesión
-  const signIn = async (email, password) => {
+  const signIn = async (email, password, au) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password).then(
+      await signInWithEmailAndPassword(au, email, password).then(
         (usuarioFirebase) => {
-
-          console.log("++++Datos dentro de singIn", usuarioFirebase);
-          //setUser(usuarioFirebase);
-          //console.log("+++Datos dentro de user", user);
-
-          console.log("++++Usuario ID: ", usuarioFirebase.user.uid);
           setUserId(usuarioFirebase.user.uid);
-
           getDatosUsuario(usuarioFirebase.user.uid);
         }
       );
@@ -112,23 +101,24 @@ export const AuthProvider = ({ children }) => {
       }
     }
   };
+
   //Funcion para cambiar cerrar sesion y redirigir al usuario
-  const signOutAndRedirect = async () => {
+  const signOutAndRedirect = async (aut) => {
     try {
-      await signOut(auth);
+      await signOut(aut);
       navigate("/");
+      console.log("Ha salido del sistema");
     } catch (error) {
       console.error("Error al cerrar sesión:", error.message);
       throw error;
     }
   };
   const redirect = async (rol) => {
-    console.log("Rredirigiendo");
     if (userInformation && rol === "Administrador") {
-      console.log("Rredirigiendo a admin");
+      console.log("A iniciado sesion como administrador");
       navigate("/Administrador");
     } else if (userInformation && rol === "usuario") {
-      console.log("Rredirigiendo a user");
+      console.log("A iniciado sesion como cliente");
       navigate("/Usuario");
     } else {
       console.log("Rredirigiendo a login");
@@ -138,7 +128,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  let contador = 0;
   //Logica de traer los nombres de los empleados una sola vez y reutilizarlos siempre en la aplicacion
   const nombresEmpleados = async () => {
     const collectionEmpleados = collection(fireStore, "Personal");
@@ -148,10 +137,6 @@ export const AuthProvider = ({ children }) => {
       resp.docs.map((doc) => {
         return { ...doc.data(), id: doc.id };
       })
-    );
-    console.log(
-      "cuatas veces se ejecuta el codigo que trae los empleados: ",
-      (contador = contador + 1)
     );
   };
 
@@ -187,9 +172,15 @@ export const AuthProvider = ({ children }) => {
 
   //Funcion para retaurar la contraseña del usuario
   function resetPassword(email) {
-    return sendPasswordResetEmail(auth, email).then((a) => {
-      alert("Se ha enviado la restauracion a su correo electronico");
-    });
+    try {
+      return sendPasswordResetEmail(auth, email).then(() => {
+        alert("Se ha enviado la restauración a su correo electrónico");
+        console.log("Verifique su correo para restablcer su contraseña");
+      });
+    } catch (error) {
+      alert("ocurrio un eror, no ha sido posible cambiar su contraseña");
+      throw error;
+    }
   }
 
   //Funcion para crear a un usuario
@@ -263,6 +254,7 @@ export const AuthProvider = ({ children }) => {
       await updateDoc(referencia, data);
       if (tablaReferencia === "Personal") {
         nombresEmpleados();
+        console.log("Se ha actualizado correctamente");
       }
       if (tablaReferencia === "UsuariosLogin") {
         const refDatosUsuario = doc(collection(fireStore, "UsuariosLogin"), id);
@@ -270,7 +262,10 @@ export const AuthProvider = ({ children }) => {
         const datosUsuario = objeto.exists() ? objeto.data() : null;
         setUserInformation(datosUsuario);
       }
-      alert("Item actualizado correctamente");
+      if (tablaReferencia === "Servicios") {
+        console.log("Se ha agregado un servicio correctamente");
+      }
+      alert("Actualizado correctamente");
     } catch (error) {
       alert("Ha ocurrido un problema");
     }
@@ -281,8 +276,12 @@ export const AuthProvider = ({ children }) => {
       await deleteDoc(doc(fireStore, tabla, id));
       if (tabla === "Personal") {
         nombresEmpleados();
+        console.log("Empleado eliminado");
       }
-      alert("Se ha eliminado el item correctamente");
+      if (tabla === "Servicios") {
+        console.log("Servicio eliminado correctamente");
+      }
+      alert("Se ha eliminado correctamente");
     } catch (error) {
       alert("A ocurrido un problema");
     }
@@ -316,8 +315,12 @@ export const AuthProvider = ({ children }) => {
       await addDoc(collection(fireStore, tablaReferencia), data);
       if (tablaReferencia === "Personal") {
         nombresEmpleados();
+        console.log("Se a creado un nuevo usuario");
       }
-      alert("Nuevo item agregado");
+      if (tablaReferencia === "Servicios") {
+        console.log("Se a creado un nuevo servicio");
+      }
+      alert("Agregado correctamente");
     } catch (error) {
       console.log(error);
     }
@@ -325,7 +328,6 @@ export const AuthProvider = ({ children }) => {
 
   // Objeto de valor para proporcionar al contexto
   const contextValue = {
-    
     userId,
     userInformation,
     itemID,

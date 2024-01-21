@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from "react";
 import ListaEmpleados from "../../../components/ListaEmpleados/ListaEmpleados.jsx";
 import { useAuth } from "../../../Context/AuthContext.jsx";
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AgregarEmpleado from "./Agregar/AgregarEmpleado.jsx";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { fireStore } from "../../../Auth/firebase.js";
 const VerEmpleados = () => {
-  const { verItems, eliminar, setItemID, itemID, historialCitas } = useAuth();
+  const { verItems, eliminar, setItemID} = useAuth();
 
   const [dsp1, setDsp1] = useState(true);
   const [empleados, setEmpleados] = useState([]);
-  const [citas, setCitas] = useState([]);
   const [elim, setElim] = useState(false);
 
   useEffect(() => {
-    verItems("Personal", setEmpleados);
+    verItems("Personal", setEmpleados).then(
+      console.log("Empelados recuperados de la base: ", empleados.length)
+    );
     setItemID("");
   }, [dsp1, elim]);
-
-  useEffect(() => {
-    console.log("itemID", citas);
-    historialCitas("Citas", "IDEmpleado", setCitas, itemID);
-  }, []);
 
   const verificar = async (id, tabla) => {
     try {

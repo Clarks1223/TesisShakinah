@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./ResumenCita.css";
-import { useAuth } from "../../Context/AuthContext";
 
 const ResumenCita = (props) => {
   const [estadolocal, setEstadoLocal] = useState(props.estado);
-
+  //props.usuario === "usuario"?"Cancelar":"Finalizar"
   return (
     <section className="contenedor-citas">
       <section className="contenedor-titulo">
@@ -31,7 +30,11 @@ const ResumenCita = (props) => {
           }}
           disabled={estadolocal !== "Activo" && props.usuario === "usuario"}
         >
-          {estadolocal === "Activo" ? "Cancelar" : "Eliminar Item"}
+          {estadolocal === "Activo"
+            ? props.usuario === "usuario"
+              ? "Cancelar"
+              : "Finalizar"
+            : "Eliminar Item"}
         </button>
       </section>
     </section>

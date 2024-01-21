@@ -16,7 +16,7 @@ export const RedesSociales = () => {
           <i className="bi bi-instagram"></i>
         </a>
         <a
-          href="https://wa.me/+593995526244?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre"
+          href="https://wa.me/+593995053899?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre"
           target="_blank"
         >
           <i className="bi bi-whatsapp"></i>
