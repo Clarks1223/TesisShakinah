@@ -19,8 +19,11 @@ export const Nosotros = () => {
         />
         <NosotrosComponents
           titulo="Nuesta historia"
-          texto="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-          imagen="https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/Nosotros%2FHistoria.png?alt=media&token=b3f19416-5bc1-4847-8e8e-cedb73b1f700"
+          texto="En el año 2016, en el sector del Pinar Alto en la ciudad de Quito, nacía Shakinah Imagen & Estética, una pequeña peluquería con grandes sueños. Su fundadora, Gloria Quiñonez, tenía una visión clara: crear un espacio donde la belleza se fusionara con la atención personalizada y el ambiente acogedor. Aunque al principio las cosas fueron difíciles, Gloria estaba decidida a convertir su peluquería en un referente en la ciudad de Quito.
+          Los primeros años fueron de constante aprendizaje y esfuerzo. Gloria y su equipo se esforzaron por perfeccionar sus habilidades, seguir las últimas tendencias y, lo más importante, construir relaciones sólidas con sus clientes. La calidad del servicio y la atención al cliente se convirtieron en pilares fundamentales para la peluquería Shakinah.
+          Con el paso de los años, Shakinah se consolidó como una de las mejores peluquerías del Pinar Alto. La introducción de servicios exclusivos, eventos especiales y colaboraciones con otras empresas locales contribuyeron a su éxito continuo.
+          En el año 2024, conscientes de la importancia de adaptarse a las nuevas tendencias digitales, La peluquería decidió dar un paso más en la expansión sus servicios mediante la creación de su propia página web. Con el objetivo de ofrecer una experiencia más completa y accesible para sus clientes, la página web se convirtió en una plataforma que no solo mostraba los servicios y horarios de la peluquería, sino que también facilitaba la reserva de citas en línea."
+          imagen="https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/Nosotros%2FPeluqueria.jpg?alt=media&token=47aeec3d-d496-4b6d-a5df-8363c7c22f3e"
         />
       </section>
     </>
