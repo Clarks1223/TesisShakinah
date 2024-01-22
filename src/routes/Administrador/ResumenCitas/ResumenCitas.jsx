@@ -25,7 +25,7 @@ const ResumenCitas = () => {
         console.log("voy a actualizar");
         setEstadoLocal("Finalizado");
         await actualizarDatos("Citas", { Estado: "Finalizado" }, iditem);
-      } else if (estado === "Finalizado") {
+      } else if (estado !== "Activo") {
         console.log("Voy a eliminar");
         const nuevasCitas = citas.filter((cita) => cita.id !== iditem);
         await eliminar("Citas", iditem);
