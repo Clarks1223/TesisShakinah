@@ -18,7 +18,7 @@ export const Nosotros = () => {
           imagen="https://firebasestorage.googleapis.com/v0/b/paginawebymovil.appspot.com/o/Nosotros%2FObjetivo.png?alt=media&token=9199defb-d98f-4c89-871f-4e81584effb8"
         />
         <NosotrosComponents
-          titulo="Nuesta historia"
+          titulo="Nuestra historia"
           texto="En el año 2016, en el sector del Pinar Alto en la ciudad de Quito, nacía Shakinah Imagen & Estética, una pequeña peluquería con grandes sueños. Su fundadora, Gloria Quiñonez, tenía una visión clara: crear un espacio donde la belleza se fusionara con la atención personalizada y el ambiente acogedor. Aunque al principio las cosas fueron difíciles, Gloria estaba decidida a convertir su peluquería en un referente en la ciudad de Quito.
           Los primeros años fueron de constante aprendizaje y esfuerzo. Gloria y su equipo se esforzaron por perfeccionar sus habilidades, seguir las últimas tendencias y, lo más importante, construir relaciones sólidas con sus clientes. La calidad del servicio y la atención al cliente se convirtieron en pilares fundamentales para la peluquería Shakinah.
           Con el paso de los años, Shakinah se consolidó como una de las mejores peluquerías del Pinar Alto. La introducción de servicios exclusivos, eventos especiales y colaboraciones con otras empresas locales contribuyeron a su éxito continuo.
