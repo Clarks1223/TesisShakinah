@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
+import { fireStore } from "../../Auth/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import "./Password-Recovery.css";
 
 const PasswordRecovery = () => {
@@ -8,12 +10,31 @@ const PasswordRecovery = () => {
 
   const { resetPassword } = useAuth();
 
+  const verificarCorreo = async (correo) => {
+    try {
+      const collectionRef = collection(fireStore, "UsuariosLogin");
+      const q = query(collectionRef, where("Email", "==", correo));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.size > 0;
+    } catch (error) {
+      console.error("Error al verificar correo:", error);
+      return true;
+    }
+  };
+
   async function handlePasswordResetSubmit(e) {
     e.preventDefault();
-    try {
-      await resetPassword(emailRef.current.value);
-    } catch (error) {
-      console.log("este es el error: ", error);
+    const correoValido = await verificarCorreo(emailRef.current.value);
+
+    if (correoValido) {
+      try {
+        await resetPassword(emailRef.current.value);
+        console.log("Se enviara la restauracion");
+      } catch (error) {
+        console.log("este es el error: ", error);
+      }
+    } else {
+      alert("No se ha localizado su correo");
     }
   }
 
