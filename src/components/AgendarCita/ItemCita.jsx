@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./ItemCita.css";
 import { useCita } from "../../Context/CitaContext";
 import { useForm } from "react-hook-form";
@@ -7,7 +7,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { fireStore } from "../../Auth/firebase";
 
 const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
-  const { userId, verItem } = useAuth();
+  const { userId, verItem, sendCustomEmail } = useAuth();
   const { eliminarCita, agendarCitaBase } = useCita();
 
   const {
@@ -15,6 +15,10 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  useEffect(() => {
+    empleadoHorario(EmpleadoID);
+  }, []);
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -45,6 +49,7 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
   };
 
   const [disabledDays, setDisabledDays] = useState([6]);
+  const [correo, setCorreo] = useState("");
 
   const verificarCitasHora = async (idEmpleado, fecha, hora, estado) => {
     try {
@@ -68,6 +73,7 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
       const usuario = await verItem("Personal", id);
       console.log("Se ha recuperado este usuario:", usuario.dias_no_laborables);
       setDisabledDays(usuario.dias_no_laborables);
+      setCorreo(usuario.Email);
     } catch (error) {
       console.error("Error al recuperar el usuario:", error);
     }
@@ -122,6 +128,10 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
       console.log("Listo para agendar cita");
       console.log("data: ", data);
       agendarCitaBase(data, id);
+      const body = `Saludos, se ha agendado una nueva cita:\nServicio: ${data.Titulo}\nFecha: ${data.Fecha}\nHora: ${data.Hora}`;
+      const asunto = "Nueva cita";
+      console.log(body);
+      sendCustomEmail(body, correo, asunto);
     } else {
       alert(
         "Este empleado ya cuenta con una cita en este horario, selecciona otro horario."

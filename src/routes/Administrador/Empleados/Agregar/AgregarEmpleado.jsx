@@ -72,9 +72,10 @@ const AgregarEmpleado = ({ pantalla }) => {
         datanuevo.Foto = autoCompleteInfo.Foto;
         datanuevo.dias_no_laborables = autoCompleteInfo.dias_no_laborables;
         const body = `Sus datos de acceso son:\nUsuario: ${data.Email}\n, Contaseña: ${autoCompleteInfo.Contrasenia}\n, Enlce de descarga de la app movil: ${autoCompleteInfo.enlace}`;
+        const asunto = "Entrega de credenciales de acceso a la aplicacion movil";
         datanuevo.contrasenaCambiada = false;
         await subirItemBD("Personal", datanuevo);
-        sendCustomEmail(body, data.Email);
+        sendCustomEmail(body, data.Email, asunto);
       } else {
         await actualizarDatos("Personal", data, idEmpleado);
         setItemID("");

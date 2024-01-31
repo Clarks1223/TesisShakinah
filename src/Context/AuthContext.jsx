@@ -212,12 +212,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   //Funcion para enviar el correo
-  async function sendCustomEmail(body, email) {
+  async function sendCustomEmail(body, email, asunto) {
     try {
       const emailContent = {
         to: email,
         message: {
-          subject: "Entrega de credenciales de acceso a la app movil",
+          subject: asunto,
           text: body,
           html: `<p>${body}</p>`,
         },
