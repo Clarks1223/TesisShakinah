@@ -52,21 +52,43 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
   const [correo, setCorreo] = useState("");
 
   const verificarCitasHora = async (idEmpleado, fecha, hora, estado) => {
-    try {
-      const collectionRef = collection(fireStore, "Citas");
-      const q = query(
-        collectionRef,
-        where("IDEmpleado", "==", idEmpleado),
-        where("Fecha", "==", fecha),
-        where("Hora", "==", hora),
-        where("Estado", "==", estado)
-      );
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.size > 0;
-    } catch (error) {
-      console.error("Error al verificar citas:", error);
-      return true;
-    }
+    let fechaActual = new Date();
+    let mes = (fechaActual.getMonth() + 1).toString().padStart(2, "0");
+    let hoy = `${fechaActual.getFullYear()}-${mes}-${fechaActual.getDate()}`;
+    let horaActual = fechaActual.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    console.log("fecha recibida", hoy);
+    console.log("fecha objeto", fecha);
+    if (fecha === hoy) {
+      console.log("Verificar hora");
+      if (hora < horaActual) {
+        console.log("No se debe agendar la cita");
+        alert("Verifique la hora de la cita");
+        return null;
+      } else {
+        console.log("No hay conflicto de fecha");
+      }
+    } else {
+      console.log("Se agendara la cita");
+      try {
+        const collectionRef = collection(fireStore, "Citas");
+        const q = query(
+          collectionRef,
+          where("IDEmpleado", "==", idEmpleado),
+          where("Fecha", "==", fecha),
+          where("Hora", "==", hora),
+          where("Estado", "==", estado)
+        );
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.size > 0;
+      } catch (error) {
+        console.error("Error al verificar citas:", error);
+        return true;
+      }
+    } //aqui la el if
   };
   const empleadoHorario = async (id) => {
     try {
@@ -124,7 +146,7 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
       "Activo"
     );
 
-    if (!hayConflicto) {
+    if (hayConflicto == false) {
       console.log("Listo para agendar cita");
       console.log("data: ", data);
       agendarCitaBase(data, id);
@@ -132,7 +154,7 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
       const asunto = "Nueva cita";
       console.log(body);
       sendCustomEmail(body, correo, asunto);
-    } else {
+    } else if (hayConflicto == true) {
       alert(
         "Este empleado ya cuenta con una cita en este horario, selecciona otro horario."
       );
