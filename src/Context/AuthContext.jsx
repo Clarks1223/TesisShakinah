@@ -107,6 +107,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOut(aut);
       navigate("/");
+      setUserInformation({})
       console.log("Ha salido del sistema");
     } catch (error) {
       console.error("Error al cerrar sesión:", error.message);

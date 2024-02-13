@@ -10,9 +10,13 @@ import { getAuth } from "firebase/auth";
 const auth = getAuth(fireBaseApp);
 const Menu = () => {
   const navigate = useNavigate();
-
+  const { userInformation } = useAuth();
   const miCuenta = async () => {
-    if (!(auth.currentUser === null) && !(auth.currentUser.email === null)) {
+    if (
+      !(auth.currentUser === null) &&
+      !(auth.currentUser.email === null) &&
+      !(userInformation === null)
+    ) {
       if (auth.currentUser.email === "shakinah.imagen.estetica@gmail.com") {
         navigate("/Administrador");
       } else {
