@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
+import { Link,  } from "react-router-dom";
 import "./Login.css";
+import { useAuth } from "../../Context/AuthContext";
 import { fireBaseApp } from "../../Auth/firebase";
 import { getAuth } from "firebase/auth";
 
@@ -10,14 +10,11 @@ const auth = getAuth(fireBaseApp);
 export const Login = () => {
   
   const { signIn } = useAuth();
-
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
-
-
 
   const onSubmit = (data) => {
     signIn(data.email, data.contrasenia, auth);

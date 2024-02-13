@@ -60,6 +60,7 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
       minute: "2-digit",
       hour12: false,
     });
+    let validator = false;
     console.log("fecha recibida", hoy);
     console.log("fecha objeto", fecha);
     if (fecha === hoy) {
@@ -69,9 +70,13 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
         alert("Verifique la hora de la cita");
         return null;
       } else {
-        console.log("No hay conflicto de fecha");
+        validator = true;
+        console.log("No hay conflicto de fecha ni hora");
       }
     } else {
+      validator = true;
+    }
+    if (validator) {
       console.log("Se agendara la cita");
       try {
         const collectionRef = collection(fireStore, "Citas");
@@ -88,7 +93,7 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
         console.error("Error al verificar citas:", error);
         return true;
       }
-    } //aqui la el if
+    }
   };
   const empleadoHorario = async (id) => {
     try {
@@ -130,7 +135,6 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
     const diaSeleccionado = fechaSeleccionada.getDay();
 
     await empleadoHorario(EmpleadoID);
-    console.log("Se ha actualizado los días no laborables", disabledDays);
 
     if (disabledDays.includes(diaSeleccionado)) {
       const mensajeDiasDeshabilitados =
@@ -145,14 +149,10 @@ const ItemCita = ({ nombreEmpleado, EmpleadoID, foto, titulo, precio, id }) => {
       data.Hora,
       "Activo"
     );
-
     if (hayConflicto == false) {
-      console.log("Listo para agendar cita");
-      console.log("data: ", data);
       agendarCitaBase(data, id);
       const body = `Saludos, se ha agendado una nueva cita:\nServicio: ${data.Titulo}\nFecha: ${data.Fecha}\nHora: ${data.Hora}`;
       const asunto = "Nueva cita";
-      console.log(body);
       sendCustomEmail(body, correo, asunto);
     } else if (hayConflicto == true) {
       alert(

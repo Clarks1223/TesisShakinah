@@ -39,12 +39,12 @@ import { CitaProvider } from "./Context/CitaContext";
 function App() {
   return (
     <BrowserRouter>
-      <section className="menu">
-        <NavBar />
-      </section>
+      <AuthProvider>
+        <section className="menu">
+          <NavBar />
+        </section>
 
-      <section className="main">
-        <AuthProvider>
+        <section className="main">
           <CitaProvider>
             <Routes>
               <Route path="/" element={<Shakinah />} />
@@ -83,12 +83,12 @@ function App() {
               <Route path="*" element={<ErrorRoute />} />
             </Routes>
           </CitaProvider>
-        </AuthProvider>
-      </section>
+        </section>
 
-      <section className="footer">
-        <Footer />
-      </section>
+        <section className="footer">
+          <Footer />
+        </section>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

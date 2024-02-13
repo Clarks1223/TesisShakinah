@@ -1,7 +1,27 @@
 import React from "react";
 import "./NavBar.css";
 import { Link } from "react-router-dom";
+
+import { useAuth } from "../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { fireBaseApp } from "../../Auth/firebase";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth(fireBaseApp);
 const Menu = () => {
+  const navigate = useNavigate();
+
+  const miCuenta = async () => {
+    if (!(auth.currentUser === null) && !(auth.currentUser.email === null)) {
+      if (auth.currentUser.email === "shakinah.imagen.estetica@gmail.com") {
+        navigate("/Administrador");
+      } else {
+        navigate("/Usuario");
+      }
+    } else {
+      navigate("/Login");
+    }
+  };
   return (
     <>
       <section className="menuPrincipal">
@@ -17,9 +37,9 @@ const Menu = () => {
         <Link to="/Servicios">
           <button className="button-NavBar">Servicios</button>
         </Link>
-        <Link to="/Login">
-          <button className="mi-cuenta">Mi cuenta</button>
-        </Link>
+        <button className="mi-cuenta" onClick={miCuenta}>
+          Mi cuenta
+        </button>
       </section>
     </>
   );
