@@ -24,19 +24,20 @@ export const EditarPerfil = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Cargar la foto y obtener la URL de descarga, enviar la foto y la direccion de la carpeta donde se almacenara
-      const urlImgDescargar = await cargarFotoBase(data.Foto, "Empleados");
-      // Si la imagen excede el límite permitido, cargarFotoBase devolverá null
-      if (urlImgDescargar === null) {
-        alert(
-          "La imagen excede el límite permitido de 2MB. No se actualizarán los datos."
-        );
-        return;
+      if (typeof data.Foto === "string") {
+      } else {
+        console.log("No se ha seleccionado una foto");
+        // Cargar la foto y obtener la URL de descarga, enviar la foto y la direccion de la carpeta donde se almacenara
+        const urlImgDescargar = await cargarFotoBase(data.Foto, "Empleados");
+        // Si la imagen excede el límite permitido, cargarFotoBase devolverá null
+        if (urlImgDescargar === null) {
+          alert(
+            "La imagen excede el límite permitido de 2MB. No se actualizarán los datos."
+          );
+          return;
+        }
+        data.Foto = urlImgDescargar;
       }
-      console.log("Datos que se van a subir: ", data);
-      data.Foto = urlImgDescargar;
-      console.log("Url de imagen: ", data);
-      // Actualizar solo el campo de la foto en el documento
       actualizarDatos("UsuariosLogin", data, userId);
       navigate("/Usuario");
     } catch (error) {
@@ -137,7 +138,7 @@ export const EditarPerfil = () => {
             type="file"
             accept="Image/*"
             {...register("Foto", {
-              required: true,
+              required: false,
             })}
           />
         </div>
