@@ -55,20 +55,32 @@ export const ActualizarServicio = ({ pantalla }) => {
     try {
       const { Titulo, Empleado, Costo, Foto } = data;
       const [IdEmpleado, nombreApellido] = Empleado.split("|");
-      const urlImgDescargar = await cargarFotoBase(Foto, "Servicios");
-      if (urlImgDescargar === null) {
-        alert(
-          "La imagen excede el límite permitido de 2MB. Por favor seleccione otro archivo."
-        );
-        return;
+      let newServicio;
+      if (typeof data.Foto == "string") {
+        console.log("No se ha selecionado un foto para actualizar");
+        newServicio = {
+          Titulo,
+          Empleado: nombreApellido,
+          IDEmpleado: IdEmpleado,
+          Costo,
+        };
+      } else {
+        console.log("Si se ha seleccionado una foto");
+        const urlImgDescargar = await cargarFotoBase(Foto, "Servicios");
+        if (urlImgDescargar === null) {
+          alert(
+            "La imagen excede el límite permitido de 2MB. Por favor seleccione otro archivo."
+          );
+          return;
+        }
+        newServicio = {
+          Titulo,
+          Empleado: nombreApellido,
+          IDEmpleado: IdEmpleado,
+          Costo,
+          Foto: urlImgDescargar,
+        };
       }
-      const newServicio = {
-        Titulo,
-        Empleado: nombreApellido,
-        IDEmpleado: IdEmpleado,
-        Costo,
-        Foto: urlImgDescargar,
-      };
       if (idServicio === "") {
         subirItemBD("Servicios", newServicio);
       } else {
@@ -166,11 +178,12 @@ export const ActualizarServicio = ({ pantalla }) => {
           {errors.Foto?.type === "required" && (
             <p className="error">La foto es obligatoria</p>
           )}
+          {console.log("la foto es obligatoria: ", idServicio ? false : true)}
           <input
             type="file"
             accept="image/*"
             {...register("Foto", {
-              required: true,
+              required: idServicio ? false : true,
             })}
           />
         </div>
